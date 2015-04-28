@@ -1,14 +1,10 @@
 package controllers
 
-import play.api._
+import controllers.SearchSuggestionController._
 import play.api.libs.json.Json
-import play.api.mvc._
+import play.api.mvc.Action
 
-
-/**
- * Created by Dan Häberlein on 24.04.15.
- */
-object SearchSuggestionControler extends Controller {
+object PicturesFromSubject {
   def index = Action(play.api.mvc.BodyParsers.parse.json) { request =>
     val transferable: Map[String, String] = Map("message" -> "This service is under construction")
     Ok(Json.toJson(transferable))

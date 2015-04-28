@@ -3,11 +3,21 @@
 # ~~~~
 
 # Home page
-GET         /                        controllers.Application.index
+GET         /                              controllers.Application.index
 
-GET         /angular                 controllers.AngularTest.index
+GET         /angular                       controllers.AngularTest.index
 
-POST        /searchsuggestion        controllers.SearchSuggestionControler.index
+POST        /searchsuggestion              controllers.SearchSuggestionController.index
+
+POST        /nl_from_subject               controllers.NlFromSubject.index
+
+POST        /pictures_from_subject         controllers.PicturesFromSubject.index
+
+POST        /locations_from_subject        controllers.LocationsFromSubject.index
+
+POST        /metainfo_from_subject         controllers.MetainfoFromSubject.index
+
+POST        /rdf_from_subject              controllers.RdfFromSubject.index
 
 # Map static resources from the /public folder to the /assets URL path
-GET         /assets/*file            controllers.Assets.at(path="/public", file)
+GET         /assets/*file                  controllers.Assets.at(path="/public", file)
