@@ -1,0 +1,27 @@
+
+RESTfull api
+============
+
+Bilder:
+*******
+
+GET /api/picture?subject=name
+Accept: application/json 
+
+Subjekttext:
+************
+
+GET /api/subject_text?subject=name
+Accept: application/json 
+
+Geodaten:
+*********
+
+GET /api/geo_data?subject=name
+Accept: application/json
+
+RDF Links:
+**********
+
+GET /api/rdf_links?subject=name
+Accept: application/json
