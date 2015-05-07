@@ -1,0 +1,3 @@
+[submodule "opt/SemWeb2NL"]
+	path = opt/SemWeb2NL
+	url = git@github.com:AKSW/SemWeb2NL.git
