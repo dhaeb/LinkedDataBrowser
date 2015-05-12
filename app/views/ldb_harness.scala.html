@@ -1,0 +1,62 @@
+@(title: String)
+
+<!DOCTYPE html>
+
+<html>
+    <head>
+        <title>@title</title>
+        <link rel="stylesheet" media="screen" href="@routes.Assets.at("stylesheets/main.css")">
+        <link href="@routes.Assets.at("components/bootstrap/dist/css/bootstrap.css")" rel="stylesheet">
+        <link href="@routes.Assets.at("components/angular-dashboard-framework/dist/angular-dashboard-framework.css")" rel="stylesheet">
+        <link rel="shortcut icon" type="image/png" href="@routes.Assets.at("images/favicon.png")">
+    </head>
+    <body ng-app="linked_data_browser">
+        <div class="container">
+
+            <div ng-view />
+
+        </div>
+
+            <!-- build:js js/angular.min.js -->
+        <script type="text/javascript" src="@routes.Assets.at("components/angular/angular.js")"></script>
+            <!-- endbuild -->
+
+            <!-- build:js js/angular-route.min.js -->
+        <script type="text/javascript" src="@routes.Assets.at("components/angular-route/angular-route.js")"></script>
+            <!-- endbuild -->
+
+            <!-- build:js js/sample.min.js -->
+            <!-- Sortable -->
+        <script type="text/javascript" src="@routes.Assets.at("components/Sortable/Sortable.js")"></script>
+
+            <!-- angular-bootstrap -->
+        <script type="text/javascript" src="@routes.Assets.at("components/angular-bootstrap/ui-bootstrap.js")"></script>
+        <script type="text/javascript" src="@routes.Assets.at("components/angular-bootstrap/ui-bootstrap-tpls.js")"></script>
+
+            <!-- angular dashboard framework -->
+        <script type="text/javascript" src="@routes.Assets.at("components/angular-dashboard-framework/dist/angular-dashboard-framework.js")")></script>
+
+            <!-- local storage -->
+        <script type="text/javascript" src="@routes.Assets.at("components/angular-local-storage/dist/angular-local-storage.js")"></script>
+
+            <!-- structures -->
+        <script type="text/javascript" src="@routes.Assets.at("components/adf-structures-base/dist/adf-structures-base.js")"></script>
+
+            <!-- linklist widget -->
+        <script type="text/javascript" src="@routes.Assets.at("components/adf-widget-linklist/dist/adf-widget-linklist.js")"></script>
+
+            <!-- markdown widget -->
+        <script type="text/javascript" src="@routes.Assets.at("components/adf-widget-markdown/dist/adf-widget-markdown.js")"></script>
+        <script type="text/javascript" src="@routes.Assets.at("components/angular-markdown-directive/markdown.js")"></script>
+        <script type="text/javascript" src="@routes.Assets.at("components/showdown/compressed/Showdown.js")"></script>
+
+            <!-- version widget -->
+        <script type="text/javascript" src="@routes.Assets.at("components/adf-widget-version/dist/adf-widget-version.js")"></script>
+
+            <!-- clock widget -->
+        <script type="text/javascript" src="@routes.Assets.at("components/adf-widget-clock/dist/adf-widget-clock.js")"></script>
+
+        <!-- Own angular module -->
+        <script type="text/javascript" src="@routes.Assets.at("javascripts/main.js")"></script>
+    </body>
+</html>

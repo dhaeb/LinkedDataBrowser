@@ -1,5 +1,9 @@
 #intellij
 
+# bower managed libraries
+
+public/components
+
 logs
 project/project
 project/target

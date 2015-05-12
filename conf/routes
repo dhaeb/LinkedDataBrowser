@@ -3,7 +3,10 @@
 # ~~~~
 
 # Home page
-GET         /                              controllers.Application.index
+
+GET         /                              controllers.LdbController.index
+
+GET         /app                           controllers.Application.index
 
 GET         /angular                       controllers.AngularTest.index
 
