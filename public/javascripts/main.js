@@ -22,46 +22,125 @@ angular.module('linked_data_browser', [
         });
 
 }).controller('sample01Ctrl', function($scope, localStorageService){
-        var name = 'sample-01';
+        var name = 'adfldb';
         var model = localStorageService.get(name);
         if (!model) {
             // set default model for demo purposes
             model = {
-                title: "Sample 01",
-                structure: "4-8",
+                title: "Mariah Carey",
+                structure: "9-3 (6-6/12)",
                 rows: [{
-                    columns: [{
-                        styleClass: "col-md-4",
-                        widgets: [{
-                            type: "linklist",
-                            config: {
-                                links: [{
-                                    title: "SCM-Manager",
-                                    href: "http://www.scm-manager.org"
-                                }, {
-                                    title: "Github",
-                                    href: "https://github.com"
-                                }, {
-                                    title: "Bitbucket",
-                                    href: "https://bitbucket.org"
-                                }, {
-                                    title: "Stackoverflow",
-                                    href: "http://stackoverflow.com"
-                                }]
-                            },
-                            title: "Links"
-                        }]
-                    }, {
-                        styleClass: "col-md-8",
-                        widgets: [{
-                            type: "markdown",
-                            config: {
-                                content: "![scm-manager logo](https://bitbucket.org/sdorra/scm-manager/wiki/resources/scm-manager_logo.jpg)\n\nThe easiest way to share and manage your Git, Mercurial and Subversion repositories over http.\n\n* Very easy installation\n* No need to hack configuration files, SCM-Manager is completely configureable from its Web-Interface\n* No Apache and no database installation is required\n* Central user, group and permission management\n* Out of the box support for Git, Mercurial and Subversion\n* Full RESTFul Web Service API (JSON and XML)\n* Rich User Interface\n* Simple Plugin API\n* Useful plugins available ( f.e. Ldap-, ActiveDirectory-, PAM-Authentication)\n* Licensed under the BSD-License"
-                            },
-                            title: "Markdown"
-                        }]
-                    }]
-                }]
+                    "columns": [
+                        {
+                            "styleClass": "col-md-9",
+                            "rows": [
+                                {
+                                    "columns": [
+                                        {
+                                            "styleClass": "col-md-12",
+                                            "widgets": [
+                                                {
+                                                    "type": "markdown",
+                                                    "config": {
+                                                        "content": "Mariah Carey ist eine US-amerikanische Pop-, Hip-Hop- und R&B-Sängerin, Songschreiberin, Produzentin und Schauspielerin. Wikipedia Geboren: 27. März 1970 (Alter 45), Huntington, New York, Vereinigte Staaten Ehepartner: Nick Cannon (verh. 2008), Tommy Mottola (verh. 1993–1998) Kinder: Moroccan Scott Cannon, Monroe Cannon"
+                                                    },
+                                                    "title": "Sängerin"
+                                                }
+                                            ]
+                                        }
+                                    ]
+                                },
+                                {
+                                    "columns": [
+                                        {
+                                            "styleClass": "col-md-6",
+                                            "widgets": [
+                                                {
+                                                    type: "markdown",
+                                                    config: {
+                                                        content: "Bild,Video,Map,etc..."
+                                                    },
+                                                    title: "Additional"
+                                                }
+                                            ]
+                                        },
+                                        {
+                                            "styleClass": "col-md-6",
+                                            "widgets": [
+                                                {
+                                                    type: "markdown",
+                                                    config: {
+                                                        content: "Bild,Video,Map,etc..."
+                                                    },
+                                                    title: "Addional"
+                                                }
+                                            ]
+                                        },
+                                        {
+                                            "styleClass": "col-md-6",
+                                            "widgets": [
+                                                {
+                                                    type: "markdown",
+                                                    config: {
+                                                        content: "Bild,Video,Map,etc..."
+                                                    },
+                                                    title: "Additional"
+                                                }
+                                            ]
+                                        },
+                                        {
+                                            "styleClass": "col-md-6",
+                                            "widgets": [
+                                                {
+                                                    type: "markdown",
+                                                    config: {
+                                                        content: "Bild,Video,Map,etc..."
+                                                    },
+                                                    title: "Addional"
+                                                }
+                                            ]
+                                        }
+                                    ]
+                                },
+                                {
+                                    "columns": [
+                                        {
+                                            "styleClass": "col-md-12",
+                                            "widgets": [
+                                                {
+                                                    "type": "markdown",
+                                                    "config": {
+                                                        "content": "..."
+                                                    },
+                                                    "title": "RDF Links"
+                                                }
+                                            ]
+                                        }
+                                    ]
+                                }
+                            ]
+                        },{
+                            "styleClass": "col-md-3",
+                            "widgets": [
+                                {
+                                    "type": "markdown",
+                                    "config": {
+                                        "content": "<img src=\"http://mariahcareynetwork.com/news/wp-content/uploads/2014/05/fafhonors14-5.jpg\" alt=\"Drawing\" style=\"width: 230px;\"/>"
+                                    },
+                                    "title": "Pic1"
+                                },
+                                {
+                                    "type": "markdown",
+                                    "config": {
+                                        "content": "<img src=\"http://www.herald.co.zw/wp-content/uploads/2014/10/mariah-carey-we-belong-together-siik-remix.jpg\" alt=\"Drawing\" style=\"width: 230px;\"/>"
+                                    },
+                                    "title": "Pic2"
+                                }
+                            ]
+                        }
+                    ]
+                }
+                ]
             };
         }
         $scope.name = name;
