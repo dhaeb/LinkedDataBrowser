@@ -8,6 +8,8 @@ GET         /                              controllers.LdbController.index
 
 GET         /app                           controllers.Application.index
 
+GET         /result                        controllers.Result.index
+
 GET         /angular                       controllers.AngularTest.index
 
 POST        /searchsuggestion              controllers.SearchSuggestionController.index
