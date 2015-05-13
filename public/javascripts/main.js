@@ -8,7 +8,8 @@ angular.module('linked_data_browser', [
     'adf', 'adf.structures.base',
     'adf.widget.markdown', 'adf.widget.linklist',
     'adf.widget.version', 'adf.widget.clock',
-    'LocalStorageModule', 'ngRoute'
+    'LocalStorageModule', 'ngRoute',
+    'ldbSearchDirective'
 ]).config(function(dashboardProvider, $routeProvider, localStorageServiceProvider){
     dashboardProvider.widgetsPath('components/');
     localStorageServiceProvider.setPrefix('adf');
