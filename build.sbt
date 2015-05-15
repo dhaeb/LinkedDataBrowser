@@ -4,6 +4,7 @@ version := "1.0"
 
 lazy val `linked_data_browser` = (project in file(".")).enablePlugins(PlayScala)
 
+//for sbt play bower plugin https://github.com/dwickern/sbt-bower
 JsEngineKeys.engineType := JsEngineKeys.EngineType.Node
 
 scalaVersion := "2.11.1"
