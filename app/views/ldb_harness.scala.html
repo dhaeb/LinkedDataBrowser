@@ -1,4 +1,4 @@
-@(title: String)
+@(title: String)(default_sparql_endpoint: String)
 
 <!DOCTYPE html>
 
@@ -7,9 +7,15 @@
         <title>@title</title>
         <link rel="stylesheet" media="screen" href="@routes.Assets.at("stylesheets/main.css")">
         <link href="@routes.Assets.at("components/bootstrap/dist/css/bootstrap.css")" rel="stylesheet">
+        <link href="@routes.Assets.at("components/bootstrap/dist/css/bootstrap-theme.css")" rel="stylesheet">
         <link href="@routes.Assets.at("components/angular-dashboard-framework/dist/angular-dashboard-framework.css")" rel="stylesheet">
         <link rel="shortcut icon" type="image/png" href="@routes.Assets.at("images/favicon.png")">
-            <!-- build:js js/angular.min.js -->
+            <!-- yamm3-> mega nav bar-->
+        <link href="@routes.Assets.at("components/yamm3/yamm/yamm.css")" rel="stylesheet"/>
+        <script type="text/javascript" src="@routes.Assets.at("components/jquery/dist/jquery.min.js")"></script>
+        <script type="text/javascript" src="@routes.Assets.at("components/bootstrap/dist/js/bootstrap.min.js")"></script>
+
+        <!-- build:js js/angular.min.js -->
         <script type="text/javascript" src="@routes.Assets.at("components/angular/angular.js")"></script>
             <!-- endbuild -->
 
@@ -55,7 +61,7 @@
     <body ng-app="linked_data_browser">
         <div class="container">
             <div ng-controller="ldbSearchDirectiveController">
-                <ldb-search/>
+                <ldb-search endpoint="@default_sparql_endpoint"/>
             </div>
             <div ng-view />
         </div>
