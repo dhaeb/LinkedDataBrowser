@@ -12,7 +12,7 @@ GET         /result                        controllers.Result.index
 
 GET         /angular                       controllers.AngularTest.index
 
-POST        /searchsuggestion              controllers.SearchSuggestionController.index
+GET        /searchsuggestion              controllers.SearchSuggestionController.index
 
 POST        /nl_from_subject               controllers.NlFromSubject.index
 
