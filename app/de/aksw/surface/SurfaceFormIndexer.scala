@@ -23,8 +23,8 @@ import java.io.FileFilter
 
 trait SpecifiableLuceneIndexPathProvider extends LuceneIndexPathProvider {
     val path : File
-    override def withIndexPath[T](f: (File) => T): T = {  
-       path.mkdirs()
+    override def withIndexPath[T](f: (File) => T): T = {
+       require(path.isDirectory() || path.mkdirs())
        f(path)
     }
 }
@@ -37,7 +37,7 @@ object SurfaceFormIndexer {
         pathname.getName equals "segments.gen" 
       }
     })
-    files.length == 1
+    files != null && files.length == 1
   }
 }
 
@@ -48,18 +48,17 @@ class SurfaceFormIndexer(indexable : File, into : File) {
   import SurfaceFormIndexer._
   
   require(indexable.exists() && indexable.isFile())
-  require(into.isDirectory())
-  
+
   val indexManager = indexIfNeeded(into)
-  
+
   private def indexIfNeeded(into : File) = {
-    val indexManager = new ReadableLuceneIndex 
-                with WritableLuceneIndex 
-                with LuceneStandardAnalyzer 
-                with FSLuceneDirectory
-                with SimpleFSLuceneDirectoryCreator
-                with SpecifiableLuceneIndexPathProvider {val path = into}
-      if(! indexExists(into)){
+    val indexManager = new ReadableLuceneIndex
+    with WritableLuceneIndex
+    with LuceneStandardAnalyzer
+    with FSLuceneDirectory
+    with SimpleFSLuceneDirectoryCreator
+    with SpecifiableLuceneIndexPathProvider {val path = into}
+    if(! indexExists(into)){
     	  def indexTurtleDocuments() = {
     		  val documents : Iterable[Document] = parseFile()
           indexManager.addDocuments(documents)
