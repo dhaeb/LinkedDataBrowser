@@ -27,20 +27,9 @@ class TestSurfaceFromIndexer extends FunSuite {
 
   }
 
-  def deleteRecursively(f: File): Unit = {
-    if (f.exists()) {
-      if (f.isDirectory()) {
-        f.listFiles().foreach {
-          deleteRecursively(_)
-        }
-      }
-      f.delete()
-    }
-  }
-
   test("indexes into given folder when needed")({
     val folderForIndexCreation = new File("target/test-classes/test-index")
-    deleteRecursively(folderForIndexCreation)
+    de.aksw.deleteRecursively(folderForIndexCreation)
     folderForIndexCreation.mkdirs()
     val indexable = new File("test/resources/test-surface-forms.ttl")
     assert(!SurfaceFormIndexer.indexExists(folderForIndexCreation), "index little file will be deleted, why it is there?")
@@ -54,20 +43,22 @@ class TestSurfaceFromIndexer extends FunSuite {
       override val path = folderForIndexCreation
     }
     val documents = index.allDocuments
-    assert(7 == documents.size)
+    assert(29 == documents.size)
     val swat: String = "swat"
     def assertIsOnlyUriName(uriName :String, result : Iterable[Document]) = {
-      assert(1 === result.size)
+      assert(result.size > 0)
       val doc = result.toArray.apply(0)
       assert(uriName === doc.get("uriName"))
     }
-    assertIsOnlyUriName(swat, testable.query(swat))
-    assert(1 == testable.query("beat*").size)
-    assert(0 == testable.query("groovy").size)
-    assert(1 == testable.query("groovy*").size)
-    assertIsOnlyUriName(swat, testable.query("Tactical*"))
-    assertIsOnlyUriName(swat, testable.query("Operative*"))
-    assert(2 == testable.query("java*").size)
+
+    assert(1 == testable.query("beat").size)
+    assert(3 == testable.query("groovy").size)
+    assert(3 == testable.query("GROOVY").size)
+    assert(3 == testable.query("groovy server Pages").size)
+    assertIsOnlyUriName(swat, testable.query("Tactical"))
+    assertIsOnlyUriName(swat, testable.query("Operative"))
+    //assertIsOnlyUriName(swat, testable.query(swat))
+    assert(3 == testable.query("java").size)
   })
 
 }

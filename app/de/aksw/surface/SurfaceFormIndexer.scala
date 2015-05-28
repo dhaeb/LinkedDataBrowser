@@ -1,25 +1,20 @@
 package de.aksw.surface
 
-import java.io.File
-import org.apache.jena.riot.RDFDataMgr
-import com.fasterxml.jackson.databind.util.ViewMatcher.Empty
-import com.gilt.lucene.FSLuceneDirectory
-import com.gilt.lucene.LuceneIndexPathProvider
-import com.gilt.lucene.LuceneStandardAnalyzer
-import com.gilt.lucene.RamLuceneDirectory
-import com.gilt.lucene.ReadableLuceneIndex
-import com.gilt.lucene.SimpleFSLuceneDirectoryCreator
-import com.gilt.lucene.WritableLuceneIndex
-import com.hp.hpl.jena.rdf.model.NodeIterator
-import com.hp.hpl.jena.rdf.model.Property
-import com.hp.hpl.jena.rdf.model.ResIterator
-import com.hp.hpl.jena.rdf.model.Resource
-import org.apache.lucene.document.Document
+import java.io.{File, FileFilter}
+
 import com.gilt.lucene.LuceneFieldHelpers._
-import com.gilt.lucene.LuceneText._
-import org.scalatest.words.JavaCollectionWrapper
-import com.gilt.lucene.LuceneDocumentAdder.LuceneDocumentLike
-import java.io.FileFilter
+import com.gilt.lucene._
+import com.hp.hpl.jena.rdf.model.{NodeIterator, Property, ResIterator, Resource}
+import org.apache.jena.riot.RDFDataMgr
+import org.apache.lucene.analysis.core.KeywordAnalyzer
+import org.apache.lucene.analysis.standard.StandardAnalyzer
+import org.apache.lucene.document.Field.Store
+import org.apache.lucene.document.{FieldType, Field, StringField, Document}
+import org.apache.lucene.index.{FieldInfo, Term}
+import org.apache.lucene.queryparser.classic.{MultiFieldQueryParser, QueryParser}
+import org.apache.lucene.queryparser.complexPhrase.ComplexPhraseQueryParser
+import org.apache.lucene.search.BooleanClause.Occur
+import org.apache.lucene.search._
 
 trait SpecifiableLuceneIndexPathProvider extends LuceneIndexPathProvider {
     val path : File
@@ -30,7 +25,11 @@ trait SpecifiableLuceneIndexPathProvider extends LuceneIndexPathProvider {
 }
 
 object SurfaceFormIndexer {
-  
+
+  val LABEL : String = "label"
+  val URINAME: String = "uriName"
+  val URI: String = "uri"
+
   def indexExists(into : File) = {
     val files = into.listFiles(new FileFilter(){
       override def accept(pathname : File) = {
@@ -87,30 +86,47 @@ class SurfaceFormIndexer(indexable : File, into : File) {
   }
   
   import scala.collection.JavaConversions._
-  
+
+  private def createFieldType: FieldType = {
+    val myStringType = new FieldType(StringField.TYPE_STORED);
+    myStringType.setIndexOptions(FieldInfo.IndexOptions.DOCS_AND_FREQS_AND_POSITIONS_AND_OFFSETS)
+    myStringType.setOmitNorms(false);
+    myStringType.setTokenized(true)
+    myStringType
+  }
+
   def parseFile() = {
     val model = RDFDataMgr.loadModel(indexable.getAbsolutePath)
     val stream : Stream[Resource] = ResourceStream(model.listSubjects())()
     val dcat = "http://www.w3.org/2004/02/skos/core#altLabel";
     val p : Property  = model.createProperty(dcat);
-    stream.toSeq.par.map  { subject => 
-    val listObjectsOfProperty : NodeIterator = model.listObjectsOfProperty(subject, p);
+    val req = for {
+      subject <- stream.toSeq.par
+      obj <- model.listObjectsOfProperty(subject, p)
+    } yield {
       def preprocessString(s : Any) = s.toString().toLowerCase()
       val returnable = new Document()
-      returnable.addStoredOnlyField( "uri", subject.getURI)
-      returnable.addIndexedStoredField("uriName", preprocessString(subject.getLocalName))
-      for(obj <- listObjectsOfProperty){
-    	  returnable.addIndexedStoredField("label", preprocessString(obj))
-      }
+      returnable.addStoredOnlyField(URI, subject.getURI)
+      val myStringType: FieldType = createFieldType
+      val uriNameField: Field = new Field(URINAME, preprocessString(subject.getLocalName), myStringType)
+      uriNameField.setBoost(0.9f)
+      returnable.add(uriNameField)
+      returnable.add(new Field(LABEL, preprocessString(obj), myStringType))
       returnable
-    }.seq
+    }
+    req.seq
   }
-  
-  val queryParser = indexManager.queryParserForDefaultField("label")
-  
+
+  val qp = indexManager.queryParserForDefaultField(LABEL)
+
   def query(queryString : String) = {
-    val query = queryParser.parse(queryString)
-    indexManager.searchTopDocuments(query, 5)
+    val query: BooleanQuery = new BooleanQuery()
+    val q: PhraseQuery = new PhraseQuery()
+    queryString.toLowerCase.split(" ").foreach(t => q.add(new Term(LABEL, t)))
+    indexManager.searchTopDocuments(q, 100)
+    query.add(new BooleanClause(q, Occur.SHOULD))
+    query.add(new BooleanClause(qp.parse(queryString), Occur.SHOULD))
+    indexManager.searchTopDocuments(query,25)
   }
   
 }

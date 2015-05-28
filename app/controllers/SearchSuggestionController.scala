@@ -4,7 +4,7 @@ import java.io.File
 
 import de.aksw.surface.SurfaceFormIndexer
 import org.apache.lucene.document.Document
-import play.api.libs.json.Json
+import play.api.libs.json.Json._
 import play.api.mvc._
 
 import scala.util.Try
@@ -26,18 +26,22 @@ object SearchSuggestionController extends Controller {
   lazy val indexer : SurfaceFormIndexer = new SurfaceFormIndexer(new File(pathToTtl),new File(indexDir))
 
   def index = Action { request =>
-    val labels: Try[String] = Try(request.queryString(query)).flatMap(labels => Try[String](labels(0)))
-    if(labels.isSuccess){
-      val label: String = labels.get
+    val labelsTry: Try[Seq[String]] = Try(request.queryString(query))
+    if(labelsTry.isSuccess){
+      val labels: Seq[String] = labelsTry.get
       def parseInfosFromDocment(d : Document) = {
-        val labelName: String = "label"
         val uriName: String = "uri"
-        Map((uriName -> d.getValues(uriName)(0)), (labelName -> d.getValues(labelName).filter(_.startsWith(label))(0)))
+        val uriValue = toJson(d.getValues(uriName)(0))
+        val labelName: String = "label"
+        val labelValue = toJson(d.getValues(labelName)(0))
+        val lastPartOfUriName : String = "uriName"
+        val lastPartOfUriValue = toJson(d.getValues(lastPartOfUriName)(0))
+        toJson(Map(uriName -> uriValue, labelName -> labelValue, lastPartOfUriName -> lastPartOfUriValue))
       }
-      val transferable = indexer.query(label + "*").map(parseInfosFromDocment).toList
-      Ok(Json.toJson(transferable))
+      val transferable = indexer.query(labels.mkString(" ")).map(parseInfosFromDocment).toList
+      Ok(toJson(transferable))
     } else {
-      BadRequest("you need to specify exactly one get paramter query!")
+      BadRequest("You need to specify exactly one get paramter query!")
     }
   }
 
