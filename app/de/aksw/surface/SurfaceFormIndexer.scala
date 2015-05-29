@@ -120,12 +120,21 @@ class SurfaceFormIndexer(indexable : File, into : File) {
   val qp = indexManager.queryParserForDefaultField(LABEL)
 
   def query(queryString : String) = {
-    val query: BooleanQuery = new BooleanQuery()
-    val q: PhraseQuery = new PhraseQuery()
-    queryString.toLowerCase.split(" ").foreach(t => q.add(new Term(LABEL, t)))
-    indexManager.searchTopDocuments(q, 100)
-    query.add(new BooleanClause(q, Occur.SHOULD))
-    query.add(new BooleanClause(qp.parse(queryString), Occur.SHOULD))
+    val query: BooleanQuery = new BooleanQuery() // the final query, we aggregate different query types to get good results
+    val phraseQuery: PhraseQuery = new PhraseQuery() // for concated terms, e.g. "java platform"
+
+    def createStartsWithQuery(t: String): Unit = {
+      val parse: Query = qp.parse(t + "*")
+      parse.setBoost(0.9f) // other (exact) matches should be more important
+      val clause: BooleanClause = new BooleanClause(parse, Occur.SHOULD)
+      query.add(clause)
+    }
+    queryString.toLowerCase.split(" ").foreach({t =>
+        phraseQuery.add(new Term(LABEL, t)) // add term to phrase query (TODO this may be improved using a proper query parser, which creates PhraseQueries ootb)
+        createStartsWithQuery(t)  // startsWith query for current word
+    })
+    phraseQuery.setBoost(1.1f) // pharse query is important
+    query.add(new BooleanClause(phraseQuery, Occur.SHOULD))
     indexManager.searchTopDocuments(query,25)
   }
   
