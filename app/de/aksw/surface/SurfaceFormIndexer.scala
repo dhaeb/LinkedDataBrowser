@@ -119,7 +119,7 @@ class SurfaceFormIndexer(indexable : File, into : File) {
 
   val qp = indexManager.queryParserForDefaultField(LABEL)
 
-  def query(queryString : String) = {
+  def query(queryString : String, resultSize : Int = 10) = {
     val query: BooleanQuery = new BooleanQuery() // the final query, we aggregate different query types to get good results
     val phraseQuery: PhraseQuery = new PhraseQuery() // for concated terms, e.g. "java platform"
 
@@ -135,7 +135,7 @@ class SurfaceFormIndexer(indexable : File, into : File) {
     })
     phraseQuery.setBoost(1.1f) // pharse query is important
     query.add(new BooleanClause(phraseQuery, Occur.SHOULD))
-    indexManager.searchTopDocuments(query,25)
+    indexManager.searchTopDocuments(query,resultSize)
   }
   
 }

@@ -22,15 +22,17 @@ angular.module('ldbSearchDirective', [])
         };
 
         $scope.$watch('searchString',function (newValue, oldValue) {
-           console.log('newValue=' + newValue);
            $scope.searchSuggestionList = [];
            if(newValue !== undefined && newValue.length >= 2){
                 //load suggestion from server
-                $http.get("/searchsuggestion",{params:{query:newValue}})
-                    .success(function(response) {
-                        $scope.searchSuggestionList = JSON.parse( response);
-                    });
-
+                $http.get("/searchsuggestion",{
+                    params: {
+                        'query' : newValue,
+                        'count' : 10
+                    }
+                 }).success(function(response) {
+                    $scope.searchSuggestionList = response;
+                 });
            } else if (newValue !== undefined && newValue.length < 2 ){
                 $scope.searchSuggestionList = [];
            }
