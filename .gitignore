@@ -3,6 +3,7 @@
 # bower managed libraries
 
 public/components
+node_modules
 
 logs
 project/project
