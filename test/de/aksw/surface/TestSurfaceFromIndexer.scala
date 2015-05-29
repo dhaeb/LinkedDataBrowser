@@ -57,7 +57,6 @@ class TestSurfaceFromIndexer extends FunSuite {
     assert(3 == testable.query("groovy server Pages").size)
     assertIsOnlyUriName(swat, testable.query("Tactical"))
     assertIsOnlyUriName(swat, testable.query("Operative"))
-    //assertIsOnlyUriName(swat, testable.query(swat))
     assert(3 == testable.query("java").size)
   })
 
