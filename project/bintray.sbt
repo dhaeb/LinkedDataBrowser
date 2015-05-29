@@ -1,0 +1,1 @@
+addSbtPlugin("com.github.dwickern" % "sbt-bower" % "1.0.1")
