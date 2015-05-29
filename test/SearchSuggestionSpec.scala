@@ -31,7 +31,7 @@ class SearchSuggestionSpec extends Specification {
       status(home) must equalTo(OK)
       contentType(home) must beSome.which(_ == "application/json")
       private val content = Json.parse(contentAsString(home)).asInstanceOf[JsArray]
-      assert(3 === content.value.length)
+      assert(4 === content.value.length)
     }
 
     "answer requests with BadRequest when not sending query get parameter" in new WithApplication {
