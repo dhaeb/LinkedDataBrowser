@@ -1,3 +1,4 @@
+
 <div class="navbar navbar-inverse yamm navbar-fixed-top">
     <div class="navbar-header">
         <button type="button" data-toggle="collapse" data-target="#navbar-collapse-2" class="navbar-toggle"><span
@@ -5,8 +6,9 @@
         <a href='#' class="navbar-brand">Linked Open Data Browser</a>
     </div>
     <form class="navbar-form navbar-left" role="search">
-        <div class="form-group">
-            <input type="text" class="input-xlarge" placeholder="Search">
+        <div class="form-group" ng-controller="ldbSearchDirectiveController">
+            <input type="text" class="input-xlarge" placeholder="Search" ng-model="searchString" typeahead="searchSuggestion as searchSuggestion.label for searchSuggestion in searchSuggestionList | filter:$viewValue | limitTo:10"
+                   typeahead-template-url="assets/angular-templates/searchSuggestionTemplate.html" typeahead-on-select='onSelect($item, $model, $label)'>
         </div>
         <button type="submit" class="btn btn-danger">
             <span class="glyphicon glyphicon-search"></span>
