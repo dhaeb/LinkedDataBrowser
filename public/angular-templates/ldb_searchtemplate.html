@@ -7,8 +7,7 @@
     </div>
     <form class="navbar-form navbar-left" role="search">
         <div class="form-group" ng-controller="ldbSearchDirectiveController">
-            <input type="text" class="input-xlarge" placeholder="Search" ng-model="searchString" typeahead="searchSuggestion as searchSuggestion.label for searchSuggestion in searchSuggestionList | filter:$viewValue | limitTo:10"
-                   typeahead-template-url="assets/angular-templates/searchSuggestionTemplate.html" typeahead-on-select='onSelect($item, $model, $label)'>
+            <input id="search" type="text" class="input-xlarge typeahead" placeholder="Search" ng-model="searchString"/>
         </div>
         <button type="submit" class="btn btn-danger">
             <span class="glyphicon glyphicon-search"></span>

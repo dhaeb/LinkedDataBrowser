@@ -3,6 +3,15 @@
  */
 'use strict';
 
+
+String.prototype.startsWith = function (str){
+    return this.indexOf(str) === 0;
+};
+
+function isUri(uri){
+    return uri.startsWith("http://") || uri.startsWith("https://");
+}
+
 angular.module('ldbSearchDirective', [])
     .directive('ldbSearch', function() {
         return {
@@ -21,20 +30,48 @@ angular.module('ldbSearchDirective', [])
             alert($item.uri);
         };
 
-        $scope.$watch('searchString',function (newValue, oldValue) {
-           $scope.searchSuggestionList = [];
-           if(newValue !== undefined && newValue.length >= 2){
-                //load suggestion from server
-                $http.get("/searchsuggestion",{
-                    params: {
-                        'query' : newValue,
-                        'count' : 10
-                    }
-                 }).success(function(response) {
-                    $scope.searchSuggestionList = response;
-                 });
-           } else if (newValue !== undefined && newValue.length < 2 ){
-                $scope.searchSuggestionList = [];
-           }
+        $scope.searchSuggestionList = [];
+
+        var inputSearchField = $('#search');
+        var typeahead = inputSearchField.typeahead({
+            highlight: true,
+            minLength: 1,
+            autoSelect : false,
+            displayText : function(item){
+                if(typeof(item) === 'string'){
+                    return item;
+                } else {
+                    return item.label + " (" +  item.uri + ")";
+                }
+            },
+            afterSelect : function(item){
+                return item.uri;
+            },
+            updater : function(item){
+                return item.uri;
+            }
+        }, {
+            name: 'search suggestion views',
+            source: $scope.searchSuggestionList,
+            templateUrl: 'assets/angular-templates/searchSuggestionTemplate.html'
         });
+
+        $scope.$watch('searchString',function (newValue, oldValue) {
+            if(newValue !== undefined && !isUri(newValue)){
+                var minsize = 3
+                if(newValue.length >= minsize){
+                    //load suggestion from server
+                    $http.get("/searchsuggestion",{
+                        params: {
+                            'query' : newValue,
+                            'count' : 10
+                        }
+                    }).success(function(response) {
+                        typeahead.data('typeahead').source = response;
+                    });
+                } else if (newValue !== undefined && newValue.length < minsize ){
+                    $scope.searchSuggestionList = [];
+                }
+            }
+        }, true);
 }]);
