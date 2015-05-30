@@ -117,19 +117,20 @@ class SurfaceFormIndexer(indexable : File, into : File) {
     req.seq
   }
 
-  val qp = indexManager.queryParserForDefaultField(LABEL)
-
   def query(queryString : String, resultSize : Int = 10) = {
     val query: BooleanQuery = new BooleanQuery() // the final query, we aggregate different query types to get good results
     val phraseQuery: PhraseQuery = new PhraseQuery() // for concated terms, e.g. "java platform"
 
     def createStartsWithQuery(t: String): Unit = {
-      val parse: Query = qp.parse(t + "*")
-      parse.setBoost(0.9f) // other (exact) matches should be more important
-      val clause: BooleanClause = new BooleanClause(parse, Occur.SHOULD)
-      query.add(clause)
+      val trimedInput: String = t.trim
+      if(!trimedInput.isEmpty && trimedInput != "*"){
+        val parse: Query = new PrefixQuery(new Term(LABEL, trimedInput))
+        parse.setBoost(0.9f) // other (exact) matches should be more important
+        val clause: BooleanClause = new BooleanClause(parse, Occur.SHOULD)
+        query.add(clause)
+      }
     }
-    queryString.toLowerCase.split(" ").foreach({t =>
+    queryString.toLowerCase.split("\\s").foreach({t =>
         phraseQuery.add(new Term(LABEL, t)) // add term to phrase query (TODO this may be improved using a proper query parser, which creates PhraseQueries ootb)
         createStartsWithQuery(t)  // startsWith query for current word
     })
