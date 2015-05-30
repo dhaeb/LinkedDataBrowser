@@ -16,13 +16,13 @@ class TestTriple2Nl extends FunSuite  {
   private val ENDPOINT_DBPEDIA: SparqlEndpoint = SparqlEndpoint.getEndpointDBpedia
 
   test("Library test for Triple2Nl"){
-    val testable = new TripleConverter(ENDPOINT_DBPEDIA, "cache", null);
+    val testable = new TripleConverter(ENDPOINT_DBPEDIA, "cache", "public/wordnet/linux/dict");
     val subject: Node = NodeFactory.createURI("http://dbpedia.org/resource/Albert_Einstein")
     val firstTriple: Triple = Triple.create(subject, RDF.`type`.asNode, NodeFactory.createURI("http://dbpedia.org/ontology/Person"))
     val secondTriple: Triple = Triple.create(subject, NodeFactory.createURI("http://dbpedia.org/ontology/birthPlace"), NodeFactory.createURI("http://dbpedia.org/resource/Ulm"))
     val triples = firstTriple :: secondTriple :: Nil
     var text: String = testable.convertTriplesToText(triples)
     System.out.println(triples + "\n-> " + text)
-    assertEquals("Albert Einstein is a person, whose's birth place is Ulm.", text)
+    assertEquals("Albert Einstein is a person and its birth place is Ulm.", text)
   }
 }
