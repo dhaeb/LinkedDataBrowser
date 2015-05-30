@@ -1,3 +1,4 @@
+
 <div class="navbar navbar-inverse yamm navbar-fixed-top">
     <div class="navbar-header">
         <button type="button" data-toggle="collapse" data-target="#navbar-collapse-2" class="navbar-toggle"><span
@@ -5,8 +6,8 @@
         <a href='#' class="navbar-brand">Linked Open Data Browser</a>
     </div>
     <form class="navbar-form navbar-left" role="search">
-        <div class="form-group">
-            <input type="text" class="input-xlarge" placeholder="Search">
+        <div class="form-group" ng-controller="ldbSearchDirectiveController">
+            <input id="search" type="text" class="input-xlarge typeahead" placeholder="Search" ng-model="searchString"/>
         </div>
         <button type="submit" class="btn btn-danger">
             <span class="glyphicon glyphicon-search"></span>

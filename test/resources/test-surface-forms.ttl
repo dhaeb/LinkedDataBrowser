@@ -1,0 +1,14 @@
+<http://dbpedia.org/resource/SWAT> <http://www.w3.org/2004/02/skos/core#altLabel>
+                "S.W.A.T" , "SWAT Team" , "SWAT team" , "Special Response Unit" , "SRT" , "10 David" , "SWAT" , "Special Response Team" , "Swat" , "Special Weapons And Tactics" , "Tactical Apprehension and Containment" , "Operative tactical" , "Special Weapons Assault Team" , "Swat Team" , "Special Weapons and Tactics" , "Special weapons and tactics" , "Tactical Response Team" .
+<http://dbpedia.org/resource/Small_Asian_mongoose> <http://www.w3.org/2004/02/skos/core#altLabel> "Javan Mongoose" .
+<http://dbpedia.org/resource/Green_Peafowl> <http://www.w3.org/2004/02/skos/core#altLabel> "Java Peafowl"  .
+<http://dbpedia.org/resource/GNU_Interpreter_for_Java> <http://www.w3.org/2004/02/skos/core#altLabel> "Gnu interpreter for java" .
+<http://dbpedia.org/resource/GNU_Interpreter_for_Java> <http://www.w3.org/2004/02/skos/core#altLabel> "GNU Interpreter for Java" .
+<http://dbpedia.org/resource/GNU_Interpreter_for_Java> <http://www.w3.org/2004/02/skos/core#altLabel> "GIJ" .
+<http://dbpedia.org/resource/Tell_Leilan> <http://www.w3.org/2004/02/skos/core#altLabel> "Shubat Enlil" .
+<http://dbpedia.org/resource/Tell_Leilan> <http://www.w3.org/2004/02/skos/core#altLabel> "Shekhna" .
+<http://dbpedia.org/resource/Tell_Leilan> <http://www.w3.org/2004/02/skos/core#altLabel> "Tell Leilan" .
+<http://dbpedia.org/resource/Tell_Leilan> <http://www.w3.org/2004/02/skos/core#altLabel> "Shubat-Enlil" .
+<http://dbpedia.org/resource/Beat'n_Groovy> <http://www.w3.org/2004/02/skos/core#altLabel> "Beat n' groovy" .
+<http://dbpedia.org/resource/Beat'n_Groovy> <http://www.w3.org/2004/02/skos/core#altLabel> "Beatn groovy" .
+<http://dbpedia.org/resource/Groovy_Server_Pages> <http://www.w3.org/2004/02/skos/core#altLabel> "Groovy Server Pages" .
