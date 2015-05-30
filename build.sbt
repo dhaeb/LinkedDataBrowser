@@ -26,17 +26,10 @@ libraryDependencies ++= Seq(
 
 // scope test
 
-libraryDependencies += "org.scalatest" %% "scalatest" % "2.2.4"
+libraryDependencies +=   "com.gilt" %% "lib-lucene-sugar" % "0.2.3"
 
-lazy val build_deps = taskKey[Unit]("Execute maven build of SemWeb2NL")
+libraryDependencies += "org.apache.jena" % "apache-jena-libs" % "2.13.0"
 
-build_deps := {
-    val mavenCmd = List("mvn", "install", "-fn")
-    val cmd = System.getProperty("os.name") match {
-        case e if e.startsWith("Windows") => List("cmd", "/c") ++ mavenCmd
-        case _ => mavenCmd
-    }
-    sys.process.Process(cmd, new java.io.File("opt/SemWeb2NL")) !
-}
+libraryDependencies +=  "org.scalatest" %% "scalatest" % "3.0.0-SNAP4"
 
-unmanagedResourceDirectories in Test <+=  baseDirectory ( _ /"target/web/public/test" )  
+unmanagedResourceDirectories in Test <+=  baseDirectory ( _ /"target/web/public/test" )   	
