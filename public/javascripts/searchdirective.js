@@ -10,6 +10,9 @@ angular.module('ldbSearchDirective', [])
     .directive('ldbSearch', function() {
         return {
             restrict : 'AEC',
+            scope: {
+                  endpoint: '@endpoint'
+            },
             templateUrl: 'assets/angular-templates/ldb_searchtemplate.html'
         };
     });
