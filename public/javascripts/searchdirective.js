@@ -21,18 +21,15 @@ angular.module('ldbSearchDirective', [])
             },
             templateUrl: 'assets/angular-templates/ldb_searchtemplate.html'
         };
-    }).controller('ldbSearchDirectiveController', ['$scope', '$http', function($scope,$http) {
+    }).controller('ldbSearchDirectiveController', ['$scope', '$rootScope', '$http', function($scope, $rootScope, $http) {
 
-        $scope.onSelect = function ($item, $model, $label) {
-            $scope.$item = $item;
-            $scope.$model = $model;
-            $scope.$label = $label;
-            alert($item.uri);
+        $rootScope.uri = "http://dbpedia.org/resource/DBpedia" // this is our new default resource
+        var inputSearchField = $('#search');
+
+        $scope.browse = function(){
+            $rootScope.uri = $scope.searchString;
         };
 
-        $scope.searchSuggestionList = [];
-
-        var inputSearchField = $('#search');
         var typeahead = inputSearchField.typeahead({
             highlight: true,
             minLength: 1,
@@ -52,7 +49,7 @@ angular.module('ldbSearchDirective', [])
             }
         }, {
             name: 'search suggestion views',
-            source: $scope.searchSuggestionList,
+            source: [],
             templateUrl: 'assets/angular-templates/searchSuggestionTemplate.html'
         });
 
@@ -69,8 +66,6 @@ angular.module('ldbSearchDirective', [])
                     }).success(function(response) {
                         typeahead.data('typeahead').source = response;
                     });
-                } else if (newValue !== undefined && newValue.length < minsize ){
-                    $scope.searchSuggestionList = [];
                 }
             }
         }, true);
