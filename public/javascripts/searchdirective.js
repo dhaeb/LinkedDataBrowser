@@ -21,7 +21,7 @@ angular.module('ldbSearchDirective', [])
             },
             templateUrl: 'assets/angular-templates/ldb_searchtemplate.html'
         };
-    }).controller('ldbSearchDirectiveController', ['$scope', '$http', function($scope,$http) {
+    }).controller('ldbSearchDirectiveController', ['$scope', '$rootScope', '$http', function($scope, $rootScope, $http) {
 
         $scope.onSelect = function ($item, $model, $label) {
             $scope.$item = $item;
@@ -33,6 +33,12 @@ angular.module('ldbSearchDirective', [])
         $scope.searchSuggestionList = [];
 
         var inputSearchField = $('#search');
+
+        $scope.browse = function(){
+            console.log($scope.searchString);
+            $rootScope.uri = $scope.searchString;
+        };
+
         var typeahead = inputSearchField.typeahead({
             highlight: true,
             minLength: 1,
