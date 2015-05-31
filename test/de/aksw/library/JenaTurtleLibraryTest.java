@@ -1,72 +1,90 @@
 package de.aksw.library;
 
-import java.io.IOException;
-import java.nio.file.Files;
-import java.nio.file.Paths;
-
-import com.hp.hpl.jena.query.*;
+import com.hp.hpl.jena.query.Query;
+import com.hp.hpl.jena.query.QueryExecution;
+import com.hp.hpl.jena.query.QueryExecutionFactory;
+import com.hp.hpl.jena.query.QueryFactory;
+import com.hp.hpl.jena.rdf.model.*;
 import org.apache.jena.riot.RDFDataMgr;
 import org.junit.Test;
 
-import com.hp.hpl.jena.rdf.model.Model;
-import com.hp.hpl.jena.rdf.model.ModelFactory;
-import com.hp.hpl.jena.rdf.model.NodeIterator;
-import com.hp.hpl.jena.rdf.model.Property;
-import com.hp.hpl.jena.rdf.model.RDFNode;
-import com.hp.hpl.jena.rdf.model.ResIterator;
-import com.hp.hpl.jena.rdf.model.Resource;
-import com.hp.hpl.jena.rdf.model.SimpleSelector;
+import java.io.IOException;
+import java.net.InetAddress;
+import java.nio.file.Files;
+import java.nio.file.Paths;
 
-import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
 
 public class JenaTurtleLibraryTest {
-	private Model model = RDFDataMgr.loadModel("test-surface-forms.ttl");
-	final String dcat = "http://www.w3.org/2004/02/skos/core#altLabel";
-	Property p = model.createProperty(dcat);
+    private Model model = RDFDataMgr.loadModel("test-surface-forms.ttl");
+    private final String dcat = "http://www.w3.org/2004/02/skos/core#altLabel";
+    private final Property p = model.createProperty(dcat);
+    private final Query q = QueryFactory.create("PREFIX dbres: <http://dbpedia.org/resource/>\n" +
+            "\n" +
+            "CONSTRUCT{ <http://dbpedia.org/resource/SWAT> ?p ?o}\n" +
+            "WHERE {\n" +
+            "  \n" +
+            "  dbres:SWAT ?p ?o .\n" +
 
-	@Test
-	public void testJena() throws Exception {
-		System.out.println(model.size());
-		ResIterator datasets = model.listSubjects();
-		long count = 0, labels = 0;
-		
-		while (datasets.hasNext()) {
-			Resource dataset = datasets.next();
-			count++;
-			NodeIterator listObjectsOfProperty = model.listObjectsOfProperty(dataset, p);
-			while(listObjectsOfProperty.hasNext()){
-				listObjectsOfProperty.next();
-				++labels;
-			}
-		}
-		System.out.println("entities " + count);
-		System.out.println("labels " + labels);
-		System.out.println("cum " + (count + labels));
-	}
-	
-	@Test
-	public void createSubsetFromFile() throws IOException{
-		Resource r = model.createResource("http://dbpedia.org/resource/SWAT");
-		SimpleSelector s = new SimpleSelector(r,(Property)null,(RDFNode)null);
-		Model simpleModel = ModelFactory.createDefaultModel().add(model.listStatements(s));
-		simpleModel.write(Files.newBufferedWriter(Paths.get("./test.ttl")), "TURTLE");
-	}
+            "}");
+
+    @Test
+    public void testJena() throws Exception {
+        System.out.println(model.size());
+        ResIterator datasets = model.listSubjects();
+        long count = 0, labels = 0;
+
+        while (datasets.hasNext()) {
+            Resource dataset = datasets.next();
+            count++;
+            NodeIterator listObjectsOfProperty = model.listObjectsOfProperty(dataset, p);
+            while (listObjectsOfProperty.hasNext()) {
+                listObjectsOfProperty.next();
+                ++labels;
+            }
+        }
+        System.out.println("entities " + count);
+        System.out.println("labels " + labels);
+        System.out.println("cum " + (count + labels));
+    }
+
+    @Test
+    public void createSubsetFromFile() throws IOException {
+        Resource r = model.createResource("http://dbpedia.org/resource/SWAT");
+        SimpleSelector s = new SimpleSelector(r, (Property) null, (RDFNode) null);
+        Model simpleModel = ModelFactory.createDefaultModel().add(model.listStatements(s));
+        simpleModel.write(Files.newBufferedWriter(Paths.get("./target/test-classes/test.ttl")), "TURTLE");
+    }
 
 
-	@Test
-	public void executeSparqlQuery(){
-		Query q = QueryFactory.create("PREFIX dbres: <http://dbpedia.org/resource/>\n" +
-				"\n" +
-				"CONSTRUCT{ <http://dbpedia.org/resource/SWAT> ?p ?o}\n" +
-				"WHERE {\n" +
-				"  \n" +
-				"  dbres:SWAT ?p ?o .\n" +
+    @Test
+    public void executeSparqlQuery() {
+        Model result = QueryExecutionFactory.create(q, model).execConstruct();
+        System.out.println(result.toString());
+        assertFalse("the constructed model should be non empty!", result.isEmpty());
+        assertEquals(17, result.size());
+    }
 
-				"}");
-		Model result = QueryExecutionFactory.create(q, model).execConstruct();
-		System.out.println(result.toString());
-		assertFalse("the constructed model should be non empty!", result.isEmpty());
-		assertEquals(17, result.size());
-	}
+
+    @Test
+    public void executeSparqlQueryOnDBPEdiaEndpoint() throws IOException {
+        String dbpediaHostname = "dbpedia.org";
+        org.junit.Assume.assumeTrue("DBPedia is not available, make sure to connect to the net to execute this test", isReachable(dbpediaHostname));
+        QueryExecution qe = QueryExecutionFactory.sparqlService("http://" + dbpediaHostname + "/sparql", q);
+        Model result = qe.execConstruct();
+        System.out.println(result.toString());
+        assertFalse("the constructed model should be non empty!", result.isEmpty());
+        assertEquals(91, result.size());
+    }
+
+    private boolean isReachable(String dbpediaHostname) throws IOException {
+        boolean returnable = false;
+        try {
+            returnable = !InetAddress.getByName(dbpediaHostname).isAnyLocalAddress();
+        } catch(IOException e){
+            // ignore safely
+        }
+        return returnable;
+    }
 }
