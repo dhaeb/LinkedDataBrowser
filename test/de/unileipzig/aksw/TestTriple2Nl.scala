@@ -16,7 +16,7 @@ class TestTriple2Nl extends FunSuite  {
   private val ENDPOINT_DBPEDIA: SparqlEndpoint = SparqlEndpoint.getEndpointDBpedia
 
   test("Library test for Triple2Nl"){
-    val testable = new TripleConverter(ENDPOINT_DBPEDIA, "cache", "public/wordnet/linux/dict");
+    val testable = new TripleConverter(ENDPOINT_DBPEDIA, "target/test-classes", "public/wordnet/linux/dict");
     val subject: Node = NodeFactory.createURI("http://dbpedia.org/resource/Albert_Einstein")
     val firstTriple: Triple = Triple.create(subject, RDF.`type`.asNode, NodeFactory.createURI("http://dbpedia.org/ontology/Person"))
     val secondTriple: Triple = Triple.create(subject, NodeFactory.createURI("http://dbpedia.org/ontology/birthPlace"), NodeFactory.createURI("http://dbpedia.org/resource/Ulm"))
