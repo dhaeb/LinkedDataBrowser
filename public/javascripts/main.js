@@ -4,6 +4,9 @@
 
 'use strict';
 
+var controlerName = 'sample01Ctrl';
+var adfDashboardChangedEventName = 'adfDashboardChanged';
+
 angular.module('linked_data_browser', [
     'adf', 'adf.structures.base',
     'adf.widget.markdown', 'adf.widget.linklist',
@@ -15,19 +18,18 @@ angular.module('linked_data_browser', [
     localStorageServiceProvider.setPrefix('adf');
         $routeProvider.when('/01', {
             templateUrl: 'assets/angular-templates/adf.html',
-            controller: 'sample01Ctrl'
+            controller: controlerName
         })
         .otherwise({
             redirectTo: '/01'
         });
 
-}).controller('sample01Ctrl', function($scope, localStorageService){
+}).controller(controlerName, function($scope, localStorageService){
         var name = 'adfldb';
         var model = localStorageService.get(name);
-        if (!model) {
-            // set default model for demo purposes
-            model = {
-                title: "Mariah Carey",
+        $scope.modelFactory = function modelFactory(){
+            return {
+                title: $scope.uri.substring($scope.uri.lastIndexOf('/')+1),
                 structure: "9-3 (6-6/12)",
                 rows: [{
                     "columns": [
@@ -42,7 +44,7 @@ angular.module('linked_data_browser', [
                                                 {
                                                     "type": "markdown",
                                                     "config": {
-                                                        "content": "Mariah Carey ist eine US-amerikanische Pop-, Hip-Hop- und R&B-Sängerin, Songschreiberin, Produzentin und Schauspielerin. Wikipedia Geboren: 27. März 1970 (Alter 45), Huntington, New York, Vereinigte Staaten Ehepartner: Nick Cannon (verh. 2008), Tommy Mottola (verh. 1993–1998) Kinder: Moroccan Scott Cannon, Monroe Cannon"
+                                                        "content": $scope.uri
                                                     },
                                                     "title": "Sängerin"
                                                 }
@@ -142,14 +144,24 @@ angular.module('linked_data_browser', [
                 }
                 ]
             };
-        }
-        $scope.name = name;
-        $scope.model = model;
-        $scope.collapsible = false;
-        $scope.maximizable = false;
-
+        };
+        if (!model) {
+            $scope.editable = false;
+            // set default model for demo purposes
+            model = $scope.modelFactory();
+            $scope.name = name;
+            $scope.model = model;
+            $scope.collapsible = false;
+            $scope.maximizable = false;
         $scope.$on('adfDashboardChanged', function (event, name, model) {
             localStorageService.set(name, model);
         });
 
-    });
+        $scope.$watch("uri", function(newValue, oldValue){
+            if(newValue !== undefined){
+                $scope.model =  $scope.modelFactory();
+                $scope.$broadcast(adfDashboardChangedEventName);
+            }
+        });
+    }
+});
