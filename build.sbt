@@ -13,7 +13,7 @@ resolvers += Resolver.mavenLocal
 
 resolvers += "Scalaz Bintray Repo" at "https://dl.bintray.com/scalaz/releases"
 
-resolvers += Resolver.url("aksw release", url("http://maven.aksw.org/repository/internal/"))
+resolvers += "aksw release" at "http://maven.aksw.org/repository/internal/"
 
 resolvers += "aksw snapshot" at "http://maven.aksw.org/repository/snapshots/"
 
