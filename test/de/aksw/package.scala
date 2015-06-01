@@ -9,6 +9,8 @@ import java.net.InetAddress
 package object aksw {
 
   val dbpediaHostname: String = "dbpedia.org"
+  val DBPEDIA_ENDPOINT: String = s"http://${dbpediaHostname}/sparql"
+  val SWAT_RESOURCE_URI: String = "http://dbpedia.org/resource/SWAT"
   val SIMPLESURFACEFORM_TURTLE_MODEL_FILENAME : String = "test-surface-forms.ttl"
 
   def deleteRecursively(f: File): Unit = {

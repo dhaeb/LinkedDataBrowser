@@ -1,16 +1,14 @@
 package de.aksw.sparql
 
-import akka.actor.{Props, ActorSystem}
+import akka.actor.{ActorSystem, Props}
 import akka.testkit.{ImplicitSender, TestKit}
-import com.hp.hpl.jena.query.QueryFactory
 import com.hp.hpl.jena.rdf.model.Model
-import org.apache.jena.riot.RDFDataMgr
-import org.scalatest.{BeforeAndAfterAll, Matchers, FunSuiteLike}
 import de.aksw._
-import scala.collection.mutable
-import scala.concurrent.duration._
+import org.apache.jena.riot.RDFDataMgr
+import org.scalatest.{BeforeAndAfterAll, FunSuiteLike, Matchers}
 
-import scala.util.{Try, Success}
+import scala.concurrent.duration._
+import scala.util.Try
 
 /**
  * Created by dhaeb on 01.06.15.
@@ -20,7 +18,7 @@ class TestSparqlQueryExecutor(_system: ActorSystem) extends TestKit(_system) wit
 
   def this() = this(ActorSystem("testactorsystem"))
 
-  val request: SparqlSubjectQueryRequest = SparqlSubjectQueryRequest(s"http://${dbpediaHostname}/sparql", "http://dbpedia.org/resource/SWAT")
+  val request: SparqlSubjectQueryRequest = SparqlSubjectQueryRequest(DBPEDIA_ENDPOINT, SWAT_RESOURCE_URI)
 
   test("test sparql worker"){
     val testable = system.actorOf(Props[SparqlQueryExecutor])
@@ -39,14 +37,19 @@ class TestSparqlQueryExecutor(_system: ActorSystem) extends TestKit(_system) wit
     testable ! request
     testable ! request
     testable ! request
-
-    var messages : Seq[Try[Model]]= Seq[Try[Model]]()
     expectMsgClass(1 seconds, classOf[Try[Model]])
     expectMsgClass(1 millisecond, classOf[Try[Model]])
     expectMsgClass(1 millisecond, classOf[Try[Model]])
     testable ! request
     expectMsgClass(1 millisecond, classOf[Try[Model]])
     ()
+  }
+
+  test("test standalone mode"){
+    val result = SparqlQueryCache.blocking(SparqlSubjectQueryRequest(DBPEDIA_ENDPOINT, SWAT_RESOURCE_URI))
+    if(result.isSuccess){
+      assert(!result.get.isEmpty)
+    }
   }
 
   override def afterAll: Unit = TestKit.shutdownActorSystem(system)

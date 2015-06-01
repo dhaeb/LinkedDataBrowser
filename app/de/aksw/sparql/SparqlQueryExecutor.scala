@@ -1,10 +1,11 @@
 package de.aksw.sparql
 
 import akka.actor._
+import akka.util.Timeout
 import com.hp.hpl.jena.query.{QueryFactory, QueryExecutionFactory, QueryExecution, Query}
 import com.hp.hpl.jena.rdf.model.Model
 import scala.concurrent.ExecutionContext.Implicits.global
-import scala.concurrent.{ExecutionContext, Future, blocking}
+import scala.concurrent.{Await, ExecutionContext, Future, blocking}
 import scala.concurrent.duration._
 import scala.util.{Success, Try, Failure}
 
@@ -33,6 +34,19 @@ class SparqlQueryExecutor extends Actor {
         sender !(r.uri, Try(QueryExecutionFactory.sparqlService(r.endpoint, r.query)).map(_.execConstruct()))
       }
     }
+  }
+
+}
+
+import akka.pattern.ask
+
+object SparqlQueryCache {
+  implicit val timeout = Timeout(10 seconds)
+  val system = ActorSystem()
+  val sparqlQueryExecutor = system.actorOf(Props[SparqlQueryCache])
+
+  def blocking(req: SparqlSubjectQueryRequest) = {
+    Await.result(sparqlQueryExecutor ? req, timeout.duration).asInstanceOf[Try[Model]]
   }
 
 }
@@ -69,7 +83,7 @@ class SparqlQueryCache extends Actor {
       val newCache: Cache = cache.updated(uri, (m, System.nanoTime()))
       context.become(receive(newCache, newInterested))
     }
-    case (uri: String, f@Failure(_)) => {
+    case (uri: String, f @ Failure(_)) => {
       interested(uri).foreach(_ ! f)
       val newInterested: Interested = interested - uri
       context.become(receive(cache, newInterested))
