@@ -22,12 +22,11 @@ resolvers += "dev.davidsoergel.com releases" at "http://dev.davidsoergel.com/nex
 resolvers += "dev.davidsoergel.com snapshots" at "http://dev.davidsoergel.com/nexus/content/repositories/snapshots"
 
 // dependencies
+
+// compile scope
 libraryDependencies +=   "com.gilt" %% "lib-lucene-sugar" % "0.2.3"
 
 libraryDependencies += "org.apache.jena" % "apache-jena-libs" % "2.13.0"
-
-
-// compile scope
 
 libraryDependencies ++= Seq(
 "org.aksw.semweb2nl" % "triple2nl" % "0.0.1-SNAPSHOT"
@@ -42,8 +41,12 @@ dependencyOverrides += "org.apache.httpcomponents" % "httpclient" % "4.2.6"
 
 libraryDependencies += "com.martiansoftware" % "jsap" % "2.1"
 
+libraryDependencies +=  "com.typesafe.akka" %% "akka-actor" % "2.3.11"
+
 // scope test
 
-libraryDependencies +=  "org.scalatest" %% "scalatest" % "3.0.0-SNAP4"
+libraryDependencies +=  "org.scalatest" %% "scalatest" % "3.0.0-SNAP4" % "test"
+
+libraryDependencies += "com.typesafe.akka" %% "akka-testkit" % "2.3.11" % "test"
 
 unmanagedResourceDirectories in Test <+=  baseDirectory ( _ /"target/web/public/test" )
