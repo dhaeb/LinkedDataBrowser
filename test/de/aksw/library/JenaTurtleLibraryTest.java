@@ -5,6 +5,7 @@ import com.hp.hpl.jena.query.QueryExecution;
 import com.hp.hpl.jena.query.QueryExecutionFactory;
 import com.hp.hpl.jena.query.QueryFactory;
 import com.hp.hpl.jena.rdf.model.*;
+import de.aksw.package$;
 import org.apache.jena.riot.RDFDataMgr;
 import org.junit.Test;
 
@@ -13,11 +14,12 @@ import java.net.InetAddress;
 import java.nio.file.Files;
 import java.nio.file.Paths;
 
-import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertTrue;
+import static org.junit.Assert.assertEquals;
 
 public class JenaTurtleLibraryTest {
-    private Model model = RDFDataMgr.loadModel("test-surface-forms.ttl");
+    private Model model = RDFDataMgr.loadModel(package$.MODULE$.SIMPLESURFACEFORM_TURTLE_MODEL_FILENAME());
     private final String dcat = "http://www.w3.org/2004/02/skos/core#altLabel";
     private final Property p = model.createProperty(dcat);
     private final Query q = QueryFactory.create("PREFIX dbres: <http://dbpedia.org/resource/>\n" +
@@ -69,22 +71,13 @@ public class JenaTurtleLibraryTest {
 
     @Test
     public void executeSparqlQueryOnDBPEdiaEndpoint() throws IOException {
-        String dbpediaHostname = "dbpedia.org";
-        org.junit.Assume.assumeTrue("DBPedia is not available, make sure to connect to the net to execute this test", isReachable(dbpediaHostname));
+        String dbpediaHostname = package$.MODULE$.dbpediaHostname();
+        org.junit.Assume.assumeTrue("DBPedia is not available, make sure to connect to the net to execute this test", package$.MODULE$.isReachable(dbpediaHostname));
         QueryExecution qe = QueryExecutionFactory.sparqlService("http://" + dbpediaHostname + "/sparql", q);
         Model result = qe.execConstruct();
         System.out.println(result.toString());
         assertFalse("the constructed model should be non empty!", result.isEmpty());
-        assertEquals(91, result.size());
+        assertTrue(result.size() > 17);
     }
 
-    private boolean isReachable(String dbpediaHostname) throws IOException {
-        boolean returnable = false;
-        try {
-            returnable = !InetAddress.getByName(dbpediaHostname).isAnyLocalAddress();
-        } catch(IOException e){
-            // ignore safely
-        }
-        return returnable;
-    }
 }
