@@ -4,10 +4,10 @@ import akka.actor._
 import akka.util.Timeout
 import com.hp.hpl.jena.query.{QueryFactory, QueryExecutionFactory, QueryExecution, Query}
 import com.hp.hpl.jena.rdf.model.Model
-import scala.concurrent.ExecutionContext.Implicits.global
 import scala.concurrent.{Await, ExecutionContext, Future, blocking}
 import scala.concurrent.duration._
 import scala.util.{Success, Try, Failure}
+import de.aksw.Constants._
 
 /**
  * Created by dhaeb on 01.06.15.

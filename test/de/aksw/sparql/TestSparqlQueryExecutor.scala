@@ -6,7 +6,7 @@ import com.hp.hpl.jena.rdf.model.Model
 import de.aksw._
 import org.apache.jena.riot.RDFDataMgr
 import org.scalatest.{BeforeAndAfterAll, FunSuiteLike, Matchers}
-
+import de.aksw.Constants._
 import scala.concurrent.duration._
 import scala.util.Try
 
@@ -23,7 +23,7 @@ class TestSparqlQueryExecutor(_system: ActorSystem) extends TestKit(_system) wit
   test("test sparql worker"){
     val testable = system.actorOf(Props[SparqlQueryExecutor])
     testable ! request
-    expectMsgClass(1 seconds, classOf[Tuple2[String, Try[Model]]])
+    expectMsgClass(3 seconds, classOf[Tuple2[String, Try[Model]]])
     ()
   }
 
@@ -37,11 +37,11 @@ class TestSparqlQueryExecutor(_system: ActorSystem) extends TestKit(_system) wit
     testable ! request
     testable ! request
     testable ! request
-    expectMsgClass(1 seconds, classOf[Try[Model]])
+    expectMsgClass(3 seconds, classOf[Try[Model]])
     expectMsgClass(1 millisecond, classOf[Try[Model]])
     expectMsgClass(1 millisecond, classOf[Try[Model]])
     testable ! request
-    expectMsgClass(1 millisecond, classOf[Try[Model]])
+    expectMsgClass(10 milliseconds, classOf[Try[Model]])
     ()
   }
 

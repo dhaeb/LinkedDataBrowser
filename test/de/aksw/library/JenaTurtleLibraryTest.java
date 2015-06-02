@@ -71,7 +71,7 @@ public class JenaTurtleLibraryTest {
 
     @Test
     public void executeSparqlQueryOnDBPEdiaEndpoint() throws IOException {
-        String dbpediaHostname = package$.MODULE$.dbpediaHostname();
+        String dbpediaHostname = de.aksw.Constants$.MODULE$.dbpediaHostname();
         org.junit.Assume.assumeTrue("DBPedia is not available, make sure to connect to the net to execute this test", package$.MODULE$.isReachable(dbpediaHostname));
         QueryExecution qe = QueryExecutionFactory.sparqlService("http://" + dbpediaHostname + "/sparql", q);
         Model result = qe.execConstruct();
