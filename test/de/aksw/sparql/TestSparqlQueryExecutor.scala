@@ -46,7 +46,7 @@ class TestSparqlQueryExecutor(_system: ActorSystem) extends TestKit(_system) wit
   }
 
   test("test standalone mode"){
-    val result = SparqlQueryCache.blocking(SparqlSubjectQueryRequest(DBPEDIA_ENDPOINT, SWAT_RESOURCE_URI))
+    val result = SparqlQueryCache.executeSparqlSubjectQuery(SparqlSubjectQueryRequest(DBPEDIA_ENDPOINT, SWAT_RESOURCE_URI))
     if(result.isSuccess){
       assert(!result.get.isEmpty)
     }

@@ -45,8 +45,18 @@ object SparqlQueryCache {
   val system = ActorSystem()
   val sparqlQueryExecutor = system.actorOf(Props[SparqlQueryCache])
 
-  def blocking(req: SparqlSubjectQueryRequest) = {
-    Await.result(sparqlQueryExecutor ? req, timeout.duration).asInstanceOf[Try[Model]]
+  /**
+   * This is the function to execute a sparql query.
+   * In the moment, due to the way the SparqlSubhectQueryRequest is implemented,
+   * only one specific query is supported.
+   *
+   * @param req The request which contains a SPARQL construct query for all triples of one subject
+   * @return a scala.util.Try with the Model or an exception in the unsucessful case
+   */
+  def executeSparqlSubjectQuery(req: SparqlSubjectQueryRequest) = {
+    blocking {
+      Await.result(sparqlQueryExecutor ? req, timeout.duration).asInstanceOf[Try[Model]]
+    }
   }
 
 }

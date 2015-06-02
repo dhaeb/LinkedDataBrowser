@@ -14,7 +14,6 @@ import org.dllearner.kb.sparql.SparqlEndpoint
 import play.api.libs.json.Json._
 import play.api.mvc.Action
 
-import scala.collection.mutable.ListBuffer
 import scala.util.Try
 import de.aksw.Constants._
 import scala.collection.JavaConverters._
@@ -25,7 +24,7 @@ object NlFromSubject {
     val uriTry : Try[String] = Try(request.queryString("uri")).map(se => se.apply(0))
     val endpoint : SparqlEndpoint = request.getQueryString("endpoint").map(e => new SparqlEndpoint(URI.create(e).toURL)).getOrElse(Constants.ENDPOINT_DBPEDIA)
     if(uriTry.isSuccess){
-      val blocking: Try[Model] = SparqlQueryCache.blocking(SparqlSubjectQueryRequest(endpoint.getURL.toString, uriTry.get))
+      val blocking: Try[Model] = SparqlQueryCache.executeSparqlSubjectQuery(SparqlSubjectQueryRequest(endpoint.getURL.toString, uriTry.get))
       if(blocking.isSuccess){
         val triples: util.List[Triple] = ExtendedIteratorStream(blocking.get.listStatements()).map({ s =>
           Triple.create(s.getSubject.asNode(), s.getPredicate.asNode(), s.getObject.asNode())

@@ -36,7 +36,6 @@ public class JenaTurtleLibraryTest {
         System.out.println(model.size());
         ResIterator datasets = model.listSubjects();
         long count = 0, labels = 0;
-
         while (datasets.hasNext()) {
             Resource dataset = datasets.next();
             count++;
