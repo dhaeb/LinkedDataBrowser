@@ -1,5 +1,7 @@
 package de.unileipzig.aksw
 
+import de.aksw.Constants._
+import de.aksw._
 import org.specs2.mutable._
 import org.specs2.runner._
 import org.junit.runner._
@@ -19,6 +21,7 @@ class NlFromSubjectSpec extends Specification {
   "RdfToNl" should {
 
     "request with valid uri should return proper NL" in new WithApplication {
+      assume(isReachable(dbpediaHostname))
       val home = route(FakeRequest(GET, "/nl_from_subject?uri=http%3A%2F%2Fdbpedia.org%2Fresource%2FRDF_Schema")).get
       status(home) must equalTo(OK)
       contentType(home) must beSome.which(_ == "application/json")
@@ -26,6 +29,13 @@ class NlFromSubjectSpec extends Specification {
       private val messageValue: String = (content \ ("nl")).toString().replace("\"", "")
       messageValue must contain ("RDF Schema is a world wide web consortium standard")
     }
+
+    "request without uri shoulud be a bad request" in new WithApplication {
+      val home = route(FakeRequest(GET, "/nl_from_subject")).get
+      status(home) must equalTo(BAD_REQUEST)
+    }
+
+    // TODO test endpoint
   }
 
 }
