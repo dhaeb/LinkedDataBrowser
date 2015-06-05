@@ -1,7 +1,7 @@
 #intellij
 
 # bower managed libraries
-
+index/
 public/components
 node_modules
 
