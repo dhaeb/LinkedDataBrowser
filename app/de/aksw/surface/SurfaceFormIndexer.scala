@@ -5,6 +5,7 @@ import java.io.{File, FileFilter}
 import com.gilt.lucene.LuceneFieldHelpers._
 import com.gilt.lucene._
 import com.hp.hpl.jena.rdf.model.{NodeIterator, Property, ResIterator, Resource}
+import de.aksw.iterator.ExtendedIteratorStream
 import org.apache.jena.riot.RDFDataMgr
 import org.apache.lucene.analysis.core.KeywordAnalyzer
 import org.apache.lucene.analysis.standard.StandardAnalyzer
@@ -16,6 +17,8 @@ import org.apache.lucene.queryparser.complexPhrase.ComplexPhraseQueryParser
 import org.apache.lucene.search.BooleanClause.Occur
 import org.apache.lucene.search._
 
+
+import de.aksw.iterator.ExtendedIteratorStream._
 trait SpecifiableLuceneIndexPathProvider extends LuceneIndexPathProvider {
     val path : File
     override def withIndexPath[T](f: (File) => T): T = {
@@ -67,24 +70,6 @@ class SurfaceFormIndexer(indexable : File, into : File) {
     indexManager
   }
 
-  object ResourceStream {
-    def apply(it :ResIterator)(): Stream[Resource] =  {
-      if(it.hasNext()){
-        new ResourceStream(it)
-      } else {
-        Stream.Empty
-      }
-    }
-  }
-    
-  class ResourceStream(private val it : ResIterator) extends Stream[Resource] {
-    val res = it.next()
-    override def isEmpty = false
-    override def head = res
-    override def tail = ResourceStream.apply(it)()
-    def tailDefined = true
-  }
-  
   import scala.collection.JavaConversions._
 
   private def createFieldType: FieldType = {
@@ -97,7 +82,7 @@ class SurfaceFormIndexer(indexable : File, into : File) {
 
   def parseFile() = {
     val model = RDFDataMgr.loadModel(indexable.getAbsolutePath)
-    val stream : Stream[Resource] = ResourceStream(model.listSubjects())()
+    val stream : Stream[Resource] = ExtendedIteratorStream(model.listSubjects())()
     val dcat = "http://www.w3.org/2004/02/skos/core#altLabel";
     val p : Property  = model.createProperty(dcat);
     val req = for {
