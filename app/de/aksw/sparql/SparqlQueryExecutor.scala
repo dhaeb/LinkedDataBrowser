@@ -14,7 +14,13 @@ import de.aksw.Constants._
  */
 
 object SparqlSubjectQueryRequest {
-  def querystring(uri: String) = "CONSTRUCT{ <%s> ?p ?o} \nWHERE {\n<%s> ?p ?o .\n}".format(uri, uri)
+  def querystring(uri: String) = (
+    "CONSTRUCT{ <%s> ?p ?o} \n" +
+    "WHERE {" +
+      "<%s> ?p ?o . " +
+      "FILTER(!isLiteral(?o) || lang(?o) = \"\" || langMatches(lang(?o), \"EN\"))" +
+      "\n}"
+    ).format(uri, uri)
 }
 
 case class SparqlSubjectQueryRequest(endpoint: String, uri: String) {

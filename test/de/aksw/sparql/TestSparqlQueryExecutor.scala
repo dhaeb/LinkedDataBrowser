@@ -28,7 +28,7 @@ class TestSparqlQueryExecutor(_system: ActorSystem) extends TestKit(_system) wit
   }
 
   test("query string"){
-    assert("CONSTRUCT{ <test> ?p ?o} \nWHERE {\n<test> ?p ?o .\n}" === SparqlSubjectQueryRequest.querystring("test"))
+    assert("CONSTRUCT{ <test> ?p ?o} \nWHERE {<test> ?p ?o . FILTER(!isLiteral(?o) || lang(?o) = \"\" || langMatches(lang(?o), \"EN\"))\n}" === SparqlSubjectQueryRequest.querystring("test"))
   }
 
   test("test cache"){
