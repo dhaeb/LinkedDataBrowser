@@ -4,7 +4,7 @@
 
 # Home page
 
-GET         /                              controllers.LdbController.index
+GET         /                              controllers.LdbMainController.index
 
 GET         /app                           controllers.Application.index
 
