@@ -4,7 +4,7 @@
 
 # Home page
 
-GET         /                              controllers.LdbController.index
+GET         /                              controllers.LdbMainController.index
 
 GET         /app                           controllers.Application.index
 
@@ -16,7 +16,7 @@ GET        /searchsuggestion              controllers.SearchSuggestionController
 
 GET        /nl_from_subject               controllers.NlFromSubject.index
 
-POST        /pictures_from_subject         controllers.PicturesFromSubject.index
+GET        /pictures_from_subject         controllers.PicturesFromSubject.index
 
 POST        /locations_from_subject        controllers.LocationsFromSubject.index
 

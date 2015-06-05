@@ -1,12 +1,16 @@
 package de.unileipzig.aksw
 
+import de.aksw.Constants._
+import de.aksw._
 import org.specs2.mutable._
 import org.specs2.runner._
 import org.junit.runner._
-import play.api.libs.json.{JsValue, Json}
+import play.api.libs.json.{JsArray, JsValue, Json}
 
 import play.api.test._
 import play.api.test.Helpers._
+
+import scala.tools.nsc.interpreter.JList
 
 /**
  * Add your spec here.
@@ -18,14 +22,22 @@ class PicturesFromSubjectSpec extends Specification {
 
   "PicturesFromSubject" should {
 
+    val controllerResource: String = "/pictures_from_subject"
+
     "request json and return stubed json" in new WithApplication {
-      val home = route(FakeRequest(POST, "/pictures_from_subject").withJsonBody(Json.parse("{}"))).get
-      status(home) must equalTo(OK)
+      assume(isReachable(dbpediaHostname))
+      val home = route(FakeRequest(GET, s"${controllerResource}?uri=http%3A%2F%2Fdbpedia.org%2Fresource%2FLeipzig")).get
       contentType(home) must beSome.which(_ == "application/json")
-      private val content = Json.parse(contentAsString(home))
-      private val messageValue: String = (content \ ("message")).toString().replace("\"", "")
-      messageValue mustEqual ("This service is under construction")
+      status(home) must equalTo(OK)
+      private val content : JsArray = Json.parse(contentAsString(home)).asInstanceOf[JsArray]
+      content(0) toString() mustEqual ("\"http://commons.wikimedia.org/wiki/Special:FilePath/Flag_of_Leipzig.svg\"")
     }
+
+    "request without uri shoulud be a bad request" in new WithApplication {
+      val home = route(FakeRequest(GET, controllerResource)).get
+      status(home) must equalTo(BAD_REQUEST)
+    }
+
   }
 
 }
