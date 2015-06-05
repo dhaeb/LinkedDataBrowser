@@ -32,6 +32,7 @@ class SparqlQueryExecutor extends Actor {
     case r: SparqlSubjectQueryRequest => {
       blocking {
         sender !(r.uri, Try(QueryExecutionFactory.sparqlService(r.endpoint, r.query)).map(_.execConstruct()))
+        context.stop(self)
       }
     }
   }
