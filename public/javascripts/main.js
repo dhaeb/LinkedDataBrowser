@@ -6,7 +6,140 @@
 
 var controlerName = 'sample01Ctrl';
 var adfDashboardChangedEventName = 'adfDashboardChanged';
+var widgetsPath = '';
+var defaultWidgetsPath = 'components.';
 
+angular.module('linked_data_browser', [
+    'adf', 'adf.structures.base',
+    'adf.widget.markdown', 'adf.widget.linklist',
+    'adf.widget.version', 'adf.widget.clock',
+    'LocalStorageModule', 'ngRoute',
+    'ldbSearchDirective','lodb.widget.main'
+]).config(function(dashboardProvider, $routeProvider, localStorageServiceProvider){
+    dashboardProvider.widgetsPath(widgetsPath);
+    localStorageServiceProvider.setPrefix('adf');
+        $routeProvider.when('/01', {
+            templateUrl: 'assets/angular-templates/adf.html',
+            controller: controlerName
+        })
+        .otherwise({
+            redirectTo: '/01'
+        });
+
+}).controller(controlerName, function($scope, localStorageService){
+        var name = 'adfldb';
+        var model = localStorageService.get(name);
+        $scope.modelFactory = function modelFactory(){
+            return {
+                title: $scope.uri.substring($scope.uri.lastIndexOf('/')+1),
+                structure: "8-4 (6-6/12)",
+                rows: [{"columns": [
+                        {
+
+                            "styleClass": "col-md-7",
+                            "rows": [
+                                {
+                                    "columns": [
+                                        {
+                                            "styleClass": "col-md-12",
+                                            "widgets": [
+                                                {
+                                                    "type": "description",
+                                                    "config": {
+                                                        "uri": $scope.uri,
+                                                        "url": '/nl_from_subject',
+                                                        "endpoint":'http://dbpedia.org/sparql',
+                                                    },
+                                                }
+                                            ]
+                                        }
+                                    ]
+                                }
+                              ]
+                        },
+                        {
+                                                "styleClass": "col-md-5",
+                                                "widgets": [{
+                                                    "type": "picture",
+                                                    "config": {
+                                                        "uri": $scope.uri,
+                                                        "url": '/pictures_from_subject',
+                                                        "endpoint":'http://dbpedia.org/sparql',
+                                                    },
+                                                }]
+                                               }
+                    ]
+                }
+                ]
+            };
+        };
+        if (!model) {
+            $scope.editable = false;
+            // set default model for demo purposes
+            model = $scope.modelFactory();
+            $scope.name = name;
+            $scope.model = model;
+            $scope.collapsible = true;
+            $scope.maximizable = false;
+
+            $scope.$on('adfDashboardChanged', function (event, name, model) {
+                localStorageService.set(name, model);
+            });
+
+            $scope.$watch("uri", function(newValue, oldValue){
+                if(newValue !== undefined){
+                    $scope.model =  $scope.modelFactory();
+                    $scope.$broadcast(adfDashboardChangedEventName);
+                }
+            });
+        }
+});
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+/*
+##orig####----------------------------------------------------------------->
 angular.module('linked_data_browser', [
     'adf', 'adf.structures.base',
     'adf.widget.markdown', 'adf.widget.linklist',
@@ -165,3 +298,4 @@ angular.module('linked_data_browser', [
         });
     }
 });
+*/
