@@ -32,22 +32,11 @@ angular.module('linked_data_browser', [
         $scope.modelFactory = function modelFactory(){
             return {
                 title: $scope.uri.substring($scope.uri.lastIndexOf('/')+1),
-                structure: "9-3 (6-6/12)",
+                structure: "8-4 (6-6/12)",
                 rows: [{"columns": [
-                    {
-                        "styleClass": "col-md-3",
-                        "widgets": [{
-                            "type": "picture",
-                            "config": {
-                                "uri": $scope.uri,
-                                "url": '/pictures_from_subject',
-                                "endpoint":'http://dbpedia.org/sparql',
-                            },
-                        }]
-                       },
                         {
 
-                            "styleClass": "col-md-9",
+                            "styleClass": "col-md-7",
                             "rows": [
                                 {
                                     "columns": [
@@ -67,7 +56,18 @@ angular.module('linked_data_browser', [
                                     ]
                                 }
                               ]
-                        }
+                        },
+                        {
+                                                "styleClass": "col-md-5",
+                                                "widgets": [{
+                                                    "type": "picture",
+                                                    "config": {
+                                                        "uri": $scope.uri,
+                                                        "url": '/pictures_from_subject',
+                                                        "endpoint":'http://dbpedia.org/sparql',
+                                                    },
+                                                }]
+                                               }
                     ]
                 }
                 ]
