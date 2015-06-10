@@ -4,6 +4,7 @@ import akka.actor._
 import akka.util.Timeout
 import com.hp.hpl.jena.query.{QueryFactory, QueryExecutionFactory, QueryExecution, Query}
 import com.hp.hpl.jena.rdf.model.Model
+import com.hp.hpl.jena.vocabulary.ReasonerVocabulary
 import scala.concurrent.{Await, ExecutionContext, Future, blocking}
 import scala.concurrent.duration._
 import scala.util.{Success, Try, Failure}
@@ -14,13 +15,24 @@ import de.aksw.Constants._
  */
 
 object SparqlSubjectQueryRequest {
-  def querystring(uri: String) = (
-    "CONSTRUCT{ <%s> ?p ?o} \n" +
-    "WHERE {" +
-      "<%s> ?p ?o . " +
-      "FILTER(!isLiteral(?o) || lang(?o) = \"\" || langMatches(lang(?o), \"EN\"))" +
-      "\n}"
-    ).format(uri, uri)
+  def querystring(uri: String) =
+    s"""|
+        |PREFIX rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#>
+        |PREFIX rdfs: <http://www.w3.org/2000/01/rdf-schema#>
+        |PREFIX owl: <http://www.w3.org/2002/07/owl#>
+        |
+        |CONSTRUCT{ <${uri}> ?p ?o}
+        |WHERE {
+        |    <${uri}> ?p ?o .
+        |    FILTER(!isLiteral(?o) || lang(?o) = "" || langMatches(lang(?o), "EN"))
+        |    FILTER NOT EXISTS {
+        |        <${uri}> rdf:type ?o .
+        |        ?o rdfs:subClassOf ?directType .
+        |        FILTER NOT EXISTS {
+        |            ?o owl:equivalentClass ?directType .
+        |        }
+        |    }
+        |}""".stripMargin
 }
 
 case class SparqlSubjectQueryRequest(endpoint: String, uri: String) {

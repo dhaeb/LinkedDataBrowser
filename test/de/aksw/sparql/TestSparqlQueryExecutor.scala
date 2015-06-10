@@ -18,20 +18,38 @@ class TestSparqlQueryExecutor(_system: ActorSystem) extends TestKit(_system) wit
 
   def this() = this(ActorSystem("testactorsystem"))
 
-  val request: SparqlSubjectQueryRequest = SparqlSubjectQueryRequest(DBPEDIA_ENDPOINT, SWAT_RESOURCE_URI)
 
-  test("test sparql worker"){
+  val request: SparqlSubjectQueryRequest = SparqlSubjectQueryRequest(DBPEDIA_ENDPOINT, SWAT_RESOURCE_URI)
+  test("test sparql worker") {
     val testable = system.actorOf(Props[SparqlQueryExecutor])
     testable ! request
     expectMsgClass(3 seconds, classOf[Tuple2[String, Try[Model]]])
     ()
   }
 
-  test("query string"){
-    assert("CONSTRUCT{ <test> ?p ?o} \nWHERE {<test> ?p ?o . FILTER(!isLiteral(?o) || lang(?o) = \"\" || langMatches(lang(?o), \"EN\"))\n}" === SparqlSubjectQueryRequest.querystring("test"))
+  test("query string") {
+    val fixture =
+      s"""|
+         |PREFIX rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#>
+         |PREFIX rdfs: <http://www.w3.org/2000/01/rdf-schema#>
+         |PREFIX owl: <http://www.w3.org/2002/07/owl#>
+         |
+         |CONSTRUCT{ <test> ?p ?o}
+         |WHERE {
+         |    <test> ?p ?o .
+         |    FILTER(!isLiteral(?o) || lang(?o) = "" || langMatches(lang(?o), "EN"))
+         |    FILTER NOT EXISTS {
+         |        <test> rdf:type ?o .
+         |        ?o rdfs:subClassOf ?directType .
+         |        FILTER NOT EXISTS {
+         |            ?o owl:equivalentClass ?directType .
+         |        }
+         |    }
+         |}""".stripMargin
+    assert(fixture === SparqlSubjectQueryRequest.querystring("test"))
   }
 
-  test("test cache"){
+  test("test cache") {
     assume(isReachable(dbpediaHostname))
     val testable = system.actorOf(Props[SparqlQueryCache])
     testable ! request
@@ -45,9 +63,9 @@ class TestSparqlQueryExecutor(_system: ActorSystem) extends TestKit(_system) wit
     ()
   }
 
-  test("test standalone mode"){
+  test("test standalone mode") {
     val result = SparqlQueryCache.executeSparqlSubjectQuery(SparqlSubjectQueryRequest(DBPEDIA_ENDPOINT, SWAT_RESOURCE_URI))
-    if(result.isSuccess){
+    if (result.isSuccess) {
       assert(!result.get.isEmpty)
     }
   }
