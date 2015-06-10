@@ -40,7 +40,7 @@ angular.module('linked_data_browser', [
                             "type": "picture",
                             "config": {
                                 "uri": $scope.uri,
-                                "url": '/nl_from_subject',
+                                "url": '/pictures_from_subject',
                                 "endpoint":'http://dbpedia.org/sparql',
                             },
                         }]

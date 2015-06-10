@@ -1,19 +1,21 @@
 angular.module('lodb.widget.main.picture', [])
-.controller('pictureCtrl', function($scope,responseData) {
-     var pictures = angular.fromJson(responseData);
-
-
-     $scope.myInterval = 5000;
-       var slides = $scope.slides = [];
-       $scope.addSlide = function() {
-         var newWidth = 600 + slides.length + 1;
-         slides.push({
-           image: 'http://placekitten.com/' + newWidth + '/300',
-           text: ['More','Extra','Lots of','Surplus'][slides.length % 4] + ' ' +
-             ['Cats', 'Kittys', 'Felines', 'Cutes'][slides.length % 4]
-         });
-       };
-       for (var i=0; i<4; i++) {
-         $scope.addSlide();
-       }
+.controller('pictureCtrl', function($scope,responseData,$http) {
+    $scope.myInterval = 5000;
+    var pictures = angular.fromJson(responseData);
+    var slides = $scope.slides = [];
+    for(var picture in pictures){
+        slides.push({image: pictures[picture],text:pictures[picture]});
+    }
+    var googleApiUrl='http://ajax.googleapis.com/ajax/services/search/images';
+    $http.get(googleApiUrl,{params:{'v' : '1.0',
+                        'q':'Mariah Carey',
+                },headers:{
+                    'Access-Control-Allow-Origin': "http://ajax.googleapis.com",
+                }
+                })
+                .success(function(data){
+                    if (data){
+                      var picJson=angular.fromJson(data);
+                      $scope.test=picJson;
+                    }});
  });
