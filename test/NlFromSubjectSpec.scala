@@ -27,7 +27,7 @@ class NlFromSubjectSpec extends Specification {
       contentType(home) must beSome.which(_ == "application/json")
       private val content = Json.parse(contentAsString(home))
       private val messageValue: String = (content \ ("nl")).toString().replace("\"", "")
-      messageValue must contain ("RDF Schema is a world wide web consortium standard")
+      messageValue must contain ("RDF Schema is an abstraction")
     }
 
     "request without uri shoulud be a bad request" in new WithApplication {
