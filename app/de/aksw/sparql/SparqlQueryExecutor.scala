@@ -2,13 +2,13 @@ package de.aksw.sparql
 
 import akka.actor._
 import akka.util.Timeout
-import com.hp.hpl.jena.query.{QueryFactory, QueryExecutionFactory, QueryExecution, Query}
+import com.hp.hpl.jena.query.{QueryExecutionFactory, QueryFactory}
 import com.hp.hpl.jena.rdf.model.Model
-import com.hp.hpl.jena.vocabulary.ReasonerVocabulary
-import scala.concurrent.{Await, ExecutionContext, Future, blocking}
+
+import scala.concurrent.ExecutionContext.Implicits.global
 import scala.concurrent.duration._
-import scala.util.{Success, Try, Failure}
-import de.aksw.Constants._
+import scala.concurrent.{Await, blocking}
+import scala.util.{Failure, Success, Try}
 
 /**
  * Created by dhaeb on 01.06.15.
@@ -44,6 +44,10 @@ case class SparqlSubjectQueryRequest(endpoint: String, uri: String) {
   val query = constructSubjectSparqlQueryTemplate
 }
 
+case class SparqlConstructQueryResult(m : Model)
+case class SparqlCacheResult(m : Model)
+case class SparqlQueryError(e : Throwable)
+
 class SparqlQueryExecutor extends Actor {
 
   override def receive: Receive = {
@@ -62,7 +66,9 @@ import akka.pattern.ask
 object SparqlQueryCache {
   implicit val timeout = Timeout(10 seconds)
   val system = ActorSystem()
-  val sparqlQueryExecutor = system.actorOf(Props[SparqlQueryCache])
+  val sparqlQueryExecutor = system.actorOf(createProps())
+
+  def createProps(maxTimeInCache : FiniteDuration = 1 hour, intervalToCheckTtl : FiniteDuration = 5 minutes) = Props(classOf[SparqlQueryCache], maxTimeInCache, intervalToCheckTtl)
 
   /**
    * This is the function to execute a sparql query.
@@ -74,19 +80,26 @@ object SparqlQueryCache {
    */
   def executeSparqlSubjectQuery(req: SparqlSubjectQueryRequest) = {
     blocking {
-      Await.result(sparqlQueryExecutor ? req, timeout.duration).asInstanceOf[Try[Model]]
+      Await.result(sparqlQueryExecutor ? req, timeout.duration)
     }
   }
 
 }
 
-class SparqlQueryCache extends Actor {
+case object CheckTtlInCache
 
-  val maxTimeInCacheInNanos = (1 hour).toNanos
+class SparqlQueryCache(maxTimeInCache : FiniteDuration, intervalToCheckTtl : FiniteDuration) extends Actor {
+
+  val maxTimeInCacheInNanos = maxTimeInCache.toNanos
 
   type CacheEntry = (Model, Long)
   type Cache = Map[String, CacheEntry]
   type Interested = Map[String, List[ActorRef]]
+
+  override def preStart = {
+    context.system.scheduler.schedule(intervalToCheckTtl, intervalToCheckTtl, self, CheckTtlInCache)
+  }
+
 
   override def receive: Actor.Receive = {
     case e: SparqlSubjectQueryRequest => {
@@ -106,16 +119,31 @@ class SparqlQueryCache extends Actor {
         perfromFreshQuery(cache, interested, e)
       }
     }
-    case (uri: String, s@Success(m: Model)) => {
-      interested(uri).foreach(_ ! s)
+
+    case (uri: String, Success(m: Model)) => {
+      interested(uri).foreach(_ ! SparqlConstructQueryResult(m))
       val newInterested: Interested = interested - uri
-      val newCache: Cache = cache.updated(uri, (m, System.nanoTime()))
+      val newCache: Cache = cache.updated(uri, (m, getCurrentTime))
       context.become(receive(newCache, newInterested))
     }
-    case (uri: String, f @ Failure(_)) => {
-      interested(uri).foreach(_ ! f)
+
+    case (uri: String, Failure(e)) => {
+      interested(uri).foreach(_ ! SparqlQueryError(e))
       val newInterested: Interested = interested - uri
       context.become(receive(cache, newInterested))
+    }
+
+    case CheckTtlInCache => {
+      def currentTime: Long = getCurrentTime
+      val cleanTtlCache = cache.foldLeft(Map[String, CacheEntry]()){  (acc : Cache, e : (String, CacheEntry)) =>
+        val (_, (_, cacheinTime)) = e
+        if(currentTime - cacheinTime > maxTimeInCacheInNanos){
+          acc
+        } else {
+          acc.updated(e._1, e._2)
+        }
+      }
+      context.become(receive(cleanTtlCache, interested))
     }
 
   }
@@ -123,14 +151,18 @@ class SparqlQueryCache extends Actor {
   def handleCacheHit(cache: Cache, interested: Interested, e: SparqlSubjectQueryRequest): Unit = {
     val uri: String = e.uri
     val entry: CacheEntry = cache(uri)
-    val now = System.nanoTime()
-    if (now - entry._2 > maxTimeInCacheInNanos) {
+    val now = getCurrentTime
+    val ttlIsExceeded: Boolean = now - entry._2 > maxTimeInCacheInNanos
+    if (ttlIsExceeded) {
       val newCache: Map[String, (Model, Long)] = cache - uri
       perfromFreshQuery(newCache, interested, e)
     } else {
-      sender ! Try(entry._1)
+      sender ! SparqlCacheResult(entry._1)
     }
   }
+
+  def getCurrentTime: Long = System.nanoTime()
+
 
   def perfromFreshQuery(cache: Cache, interested: Interested, e: SparqlSubjectQueryRequest): Unit = {
     startWorker(e)

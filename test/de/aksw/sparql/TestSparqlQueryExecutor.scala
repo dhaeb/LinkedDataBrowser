@@ -1,12 +1,13 @@
 package de.aksw.sparql
 
-import akka.actor.{ActorSystem, Props}
+import akka.actor.{ActorRef, ActorSystem, Props}
 import akka.testkit.{ImplicitSender, TestKit}
 import com.hp.hpl.jena.rdf.model.Model
+import de.aksw.Constants._
 import de.aksw._
 import org.apache.jena.riot.RDFDataMgr
 import org.scalatest.{BeforeAndAfterAll, FunSuiteLike, Matchers}
-import de.aksw.Constants._
+
 import scala.concurrent.duration._
 import scala.util.Try
 
@@ -20,7 +21,8 @@ class TestSparqlQueryExecutor(_system: ActorSystem) extends TestKit(_system) wit
 
 
   val request: SparqlSubjectQueryRequest = SparqlSubjectQueryRequest(DBPEDIA_ENDPOINT, SWAT_RESOURCE_URI)
-  test("test sparql worker") {
+
+ test("test sparql worker") {
     val testable = system.actorOf(Props[SparqlQueryExecutor])
     testable ! request
     expectMsgClass(3 seconds, classOf[Tuple2[String, Try[Model]]])
@@ -51,23 +53,44 @@ class TestSparqlQueryExecutor(_system: ActorSystem) extends TestKit(_system) wit
 
   test("test cache") {
     assume(isReachable(dbpediaHostname))
-    val testable = system.actorOf(Props[SparqlQueryCache])
+    val testable = createTestableActor()
     testable ! request
     testable ! request
     testable ! request
-    expectMsgClass(3 seconds, classOf[Try[Model]])
-    expectMsgClass(1 millisecond, classOf[Try[Model]])
-    expectMsgClass(1 millisecond, classOf[Try[Model]])
+    expectMsgClass(3 seconds, classOf[SparqlConstructQueryResult])
+    expectMsgClass(10 millisecond, classOf[SparqlConstructQueryResult])
+    expectMsgClass(10 millisecond, classOf[SparqlConstructQueryResult])
+    Thread.sleep(10L)
     testable ! request
-    expectMsgClass(10 milliseconds, classOf[Try[Model]])
+    expectMsgClass(10 milliseconds, classOf[SparqlCacheResult])
     ()
   }
 
+  def createTestableActor(p : Props = SparqlQueryCache.createProps()): ActorRef = {
+    system.actorOf(p)
+  }
+
   test("test standalone mode") {
+    assume(isReachable(dbpediaHostname))
     val result = SparqlQueryCache.executeSparqlSubjectQuery(SparqlSubjectQueryRequest(DBPEDIA_ENDPOINT, SWAT_RESOURCE_URI))
-    if (result.isSuccess) {
-      assert(!result.get.isEmpty)
-    }
+    assert(result.isInstanceOf[SparqlConstructQueryResult])
+    val result2 = SparqlQueryCache.executeSparqlSubjectQuery(SparqlSubjectQueryRequest(DBPEDIA_ENDPOINT, SWAT_RESOURCE_URI))
+    assert(result2.isInstanceOf[SparqlCacheResult])
+  }
+
+  test("test cache ttl") {
+    assume(isReachable(dbpediaHostname))
+    val ttl: FiniteDuration = 100 milliseconds
+    val testable = createTestableActor(SparqlQueryCache.createProps(ttl, ttl))
+    testable ! request
+    expectMsgClass(3 seconds, classOf[SparqlConstructQueryResult])
+    testable ! request
+    expectMsgClass(10 milliseconds, classOf[SparqlCacheResult])
+    Thread.sleep(ttl.toMillis + 50L)
+    testable ! CheckTtlInCache
+    testable ! request
+    expectMsgClass(3 seconds, classOf[SparqlConstructQueryResult])
+    ()
   }
 
   override def afterAll: Unit = TestKit.shutdownActorSystem(system)
