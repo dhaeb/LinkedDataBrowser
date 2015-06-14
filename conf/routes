@@ -18,6 +18,8 @@ GET        /nl_from_subject               controllers.NlFromSubject.index
 
 GET        /pictures_from_subject         controllers.PicturesFromSubject.index
 
+POST        /fox_proxy                      controllers.FoxProxy.index
+
 POST        /locations_from_subject        controllers.LocationsFromSubject.index
 
 POST        /metainfo_from_subject         controllers.MetainfoFromSubject.index

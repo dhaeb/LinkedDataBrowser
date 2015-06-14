@@ -37,6 +37,10 @@ libraryDependencies ++= Seq(
     exclude("org.apache.jena","jena-arq")
 )
 
+libraryDependencies ++= Seq(
+    javaWs
+)
+
 dependencyOverrides += "org.apache.httpcomponents" % "httpclient" % "4.2.6"
 
 libraryDependencies += "com.martiansoftware" % "jsap" % "2.1"
