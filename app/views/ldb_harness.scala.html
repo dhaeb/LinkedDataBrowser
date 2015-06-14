@@ -63,7 +63,10 @@
         <script type="text/javascript" src="@routes.Assets.at("widgets/main/src/main_widget.js")"></script>
         <script type="text/javascript" src="@routes.Assets.at("widgets/picture/src/picture_widget.js")"></script>
         <script type="text/javascript" src="@routes.Assets.at("widgets/fox/src/fox_widget.js")"></script>
-
+        <script type="text/javascript">
+            angular.module('lodb.widget.main').constant('DEFAULT_ENDPOINT', '@default_sparql_endpoint');
+            angular.module('lodb.widget.main').constant('DEFAULT_SUBJECT', "http://dbpedia.org/resource/DBpedia");
+        </script>
     </head>
     <body ng-app="linked_data_browser">
         <div class="container">
