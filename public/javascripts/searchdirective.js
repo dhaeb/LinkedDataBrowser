@@ -22,12 +22,14 @@ angular.module('ldbSearchDirective', [])
             templateUrl: 'assets/angular-templates/ldb_searchtemplate.html'
         };
     }).controller('ldbSearchDirectiveController', ['$scope', '$rootScope', '$http', function($scope, $rootScope, $http) {
-
-        $rootScope.uri = "http://dbpedia.org/resource/DBpedia" // this is our new default resource
         var inputSearchField = $('#search');
 
         $scope.browse = function(){
-            $rootScope.uri = $scope.searchString;
+            $rootScope.subject_mask = $scope.searchString;
+        };
+
+        $scope.setendpoint = function(){
+            $rootScope.endpoint_mask = $scope.endpoint;
         };
 
         var typeahead = inputSearchField.typeahead({
