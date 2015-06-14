@@ -44,8 +44,8 @@ angular.module('linked_data_browser', [
                                             "styleClass": "col-md-12",
                                             "widgets": [
                                                 {
-                                                    "type": "description",
                                                     "title" : "Description",
+                                                    "type": "fox",
                                                     "config": {
                                                         "uri": $scope.uri,
                                                         "url": '/nl_from_subject',

@@ -34,6 +34,11 @@ angular.module('lodb.widget.main', ['adf.provider',
                 description: 'Display pictures',
                 templateUrl: 'assets/widgets/picture/src/picture_view.html',
                 controller: 'pictureCtrl',
+            }, mainWidget)).widget('fox', angular.extend({
+                title : 'Fox Tagged Description',
+                description: 'Display a textual description for the subject tagged by fox',
+                templateUrl: 'assets/widgets/fox/src/fox_view.html',
+                controller: 'foxCtrl'
             }, mainWidget)
         );
 
