@@ -45,10 +45,12 @@ angular.module('linked_data_browser', [
                                             "widgets": [
                                                 {
                                                     "type": "description",
+                                                    "title" : "Description",
                                                     "config": {
                                                         "uri": $scope.uri,
                                                         "url": '/nl_from_subject',
                                                         "endpoint":'http://dbpedia.org/sparql',
+                                                        "transform"  : function(j){return j.nl;}
                                                     },
                                                 }
                                             ]

@@ -1,7 +1,7 @@
 angular.module('lodb.widget.main.picture', [])
     .controller('pictureCtrl', function ($scope, responseData, $http, config) {
         $scope.myInterval = 10000;
-        var pictures = angular.fromJson(responseData);
+        var pictures = responseData ;
         var slides = $scope.slides = [];
         for (var picture in pictures) {
             slides.push({image: pictures[picture], text: pictures[picture]});
