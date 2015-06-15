@@ -18,9 +18,9 @@ GET        /nl_from_subject               controllers.NlFromSubject.index
 
 GET        /pictures_from_subject         controllers.PicturesFromSubject.index
 
-POST        /locations_from_subject        controllers.LocationsFromSubject.index
+GET        /metainfo_from_subject         controllers.MetainfoFromSubject.index
 
-POST        /metainfo_from_subject         controllers.MetainfoFromSubject.index
+POST        /locations_from_subject        controllers.LocationsFromSubject.index
 
 POST        /rdf_from_subject              controllers.RdfFromSubject.index
 
