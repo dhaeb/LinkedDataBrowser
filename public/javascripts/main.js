@@ -31,9 +31,21 @@ angular.module('linked_data_browser', [
         .otherwise({
             redirectTo: '/'
         });
-}).controller(controlerName, function($scope, localStorageService, $routeParams, DEFAULT_ENDPOINT, DEFAULT_SUBJECT){
-    $scope.endpoint = "endpoint" in $routeParams ? $routeParams.endpoint : DEFAULT_ENDPOINT;
-    $scope.subject = "subject" in $routeParams ? $routeParams.subject : DEFAULT_SUBJECT;
+}).service('query_parameter', function(DEFAULT_ENDPOINT, DEFAULT_SUBJECT){
+    var endpoint = DEFAULT_ENDPOINT;
+    var  subject = DEFAULT_SUBJECT;
+
+    this.getEndpoint = function(){return endpoint;};
+    this.setEndpoint = function(newendpoint){endpoint = newendpoint;};
+
+    this.getSubject = function(){return subject;};
+    this.setSubject = function(newsubject){subject = newsubject;};
+
+}).controller(controlerName, function($scope, localStorageService, $routeParams, DEFAULT_ENDPOINT, DEFAULT_SUBJECT, query_parameter){
+    $scope.$routeParams = $routeParams;
+    $scope.endpoint = "endpoint" in $routeParams ? $routeParams.endpoint : query_parameter.getEndpoint();
+    $scope.subject = "subject" in $routeParams ? $routeParams.subject : query_parameter.getSubject();
+    $scope.query_parameter = query_parameter; // important to watch the value changes!
         var name = 'adfldb';
         var model = localStorageService.get(name);
         $scope.modelFactory = function modelFactory(){
@@ -98,22 +110,35 @@ angular.module('linked_data_browser', [
 
             $scope.$watch("subject", function(newValue, oldValue){
                 if(newValue !== undefined){
+                    if($scope.query_parameter.getSubject() != newValue){
+                        $scope.query_parameter.setSubject(newValue);
+                    }
                     $scope.subject = newValue;
                     $scope.model =  $scope.modelFactory();
                     $scope.$broadcast(adfDashboardChangedEventName);
                 }
             });
 
-            $scope.$watch("subject_mask", function(newValue, oldValue){
-                if(newValue !== undefined && newValue != oldValue){
-                    $scope.subject = newValue;
+            $scope.$watch("endpoint", function(newValue, oldValue){
+                if(newValue !== undefined){
+                    if($scope.query_parameter.getEndpoint() != newValue){
+                        $scope.query_parameter.setEndpoint(newValue);
+                    }
                 }
             });
 
-            $scope.$watch("endpoint_mask", function(newValue, oldValue){
-                if(newValue !== undefined && newValue != oldValue){
-                    $scope.endpoint= newValue;
-                }
-            });
         }
+
+        $scope.$watch("query_parameter.getSubject()", function(newValue, oldValue){
+            if(newValue !== undefined){
+                $scope.subject = newValue;
+            }
+        }, true);
+
+
+        $scope.$watch("query_parameter.getEndpoint()", function(newValue, oldValue){
+            if(newValue !== undefined){
+                $scope.endpoint = newValue;
+            }
+        });
 });

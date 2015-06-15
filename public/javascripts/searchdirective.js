@@ -21,16 +21,36 @@ angular.module('ldbSearchDirective', [])
             },
             templateUrl: 'assets/angular-templates/ldb_searchtemplate.html'
         };
-    }).controller('ldbSearchDirectiveController', ['$scope', '$rootScope', '$http', function($scope, $rootScope, $http) {
+    }).controller('ldbSearchDirectiveController', ['$scope', '$http', 'query_parameter', function($scope, $http, query_parameter) {
         var inputSearchField = $('#search');
+        $scope.query_parameter = query_parameter;
+
+        // functions to call when changing parameters in searchbar
 
         $scope.browse = function(){
-            $rootScope.subject_mask = $scope.searchString;
+            if($scope.searchString == query_parameter.getSubject()){
+                query_parameter.setSubject("asdf");
+            }
+            query_parameter.setSubject($scope.searchString);
         };
 
         $scope.setendpoint = function(){
-            $rootScope.endpoint_mask = $scope.endpoint;
+            query_parameter.setEndpoint($scope.endpoint);
         };
+
+
+        // functions to watch and adjust the state with the main page
+        $scope.$watch("query_parameter.getSubject()", function(newValue, oldValue){
+            if(newValue !== undefined && $scope.searchString != newValue){
+                $scope.searchString = ""; // set this empty because its nicer
+            }
+        });
+
+        $scope.$watch("query_parameter.getEndpoint()", function(newValue, oldValue){
+            if(newValue !== undefined && $scope.endpoint != newValue){
+                $scope.endpoint = newValue;
+            }
+        });
 
         var typeahead = inputSearchField.typeahead({
             highlight: true,
