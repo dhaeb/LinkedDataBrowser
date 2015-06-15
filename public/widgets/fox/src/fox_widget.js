@@ -17,4 +17,30 @@ angular.module('lodb.widget.main.fox', [])
         return function(htmlCode){
             return $sce.trustAsHtml(htmlCode);
         }
+    }]).filter("ldbnize_link", ['$sce', 'DEFAULT_ENDPOINT', function($sce) { // change link to a dbpedia resource into a link to the ldb
+        return function(htmlTags){
+
+            function startsWith(s) {
+                var regex = /^(\/#\/)/i;
+                return regex.test(s);
+            };
+
+            if(htmlTags !== undefined){
+                $("a").attr("href", function(i, oldHref) {
+                    if(oldHref === undefined || startsWith(oldHref)){
+                        return oldHref;
+                    } else {
+                        return "/#/" + encodeURIComponent(oldHref);
+                    }
+                });
+                $("a").attr("target", function(i, target) {
+                    var parent = "_parent";
+                    if(target !== undefined || target != parent){
+                        return parent;
+                    }
+                   return target;
+                });
+            }
+            return htmlTags;
+        }
     }]);
