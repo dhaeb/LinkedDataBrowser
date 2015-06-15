@@ -20,9 +20,9 @@ GET        /pictures_from_subject         controllers.PicturesFromSubject.index
 
 GET        /metainfo_from_subject         controllers.MetainfoFromSubject.index
 
-POST        /fox_proxy                      controllers.FoxProxy.index
+GET        /locations_from_subject        controllers.LocationsFromSubject.index
 
-POST        /locations_from_subject        controllers.LocationsFromSubject.index
+POST        /fox_proxy                      controllers.FoxProxy.index
 
 POST        /rdf_from_subject              controllers.RdfFromSubject.index
 
