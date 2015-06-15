@@ -7,6 +7,7 @@ import controllers.SearchSuggestionController._
 import de.aksw.Constants
 import de.aksw.sparql._
 import org.dllearner.kb.sparql.SparqlEndpoint
+import play.api.Logger
 import play.api.mvc.{Result, Action}
 
 import scala.util.Try
@@ -16,16 +17,20 @@ import scala.util.Try
  */
 trait LdbController {
 
+  protected val logger: Logger = Logger(this.getClass())
+
   def index = Action { request =>
     val uriTry: Try[String] = Try(request.queryString("uri")).map(se => se.apply(0))
     val endpoint: SparqlEndpoint = request.getQueryString("endpoint").map(e => new SparqlEndpoint(URI.create(e).toURL)).getOrElse(Constants.ENDPOINT_DBPEDIA)
     if (uriTry.isSuccess) {
+      logger.info(s"Handling uri ${uriTry} and endpoint ${endpoint.toString}...")
       SparqlQueryCache.executeSparqlSubjectQuery(SparqlSubjectQueryRequest(endpoint.getURL.toString, uriTry.get)) match {
         case SparqlCacheResult(m: Model) => process(uriTry.get, endpoint, m)
         case SparqlConstructQueryResult(m : Model) => process(uriTry.get, endpoint, m)
         case SparqlQueryError(e) => BadRequest("There was an error during the SPARQL request!")
       }
     } else {
+      logger.debug("Bad request from ... ")
       BadRequest("You need to specify the uri parameter!")
     }
   }
