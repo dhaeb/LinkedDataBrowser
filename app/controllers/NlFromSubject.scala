@@ -13,18 +13,33 @@ import play.api.libs.json.Json._
 import play.api.mvc.Result
 
 import scala.collection.JavaConverters._
+import play.api.Logger
 
 object NlFromSubject extends LdbController {
 
   override def process(uri: String, endpoint: SparqlEndpoint, m: Model): Result = {
+    val text: String = createTextualRepresenationUsingTriple2Nl(endpoint, m, (s => s.getPredicate.toString.contains("http://dbpedia.org/ontology") && !inBlacklist(s))).orElse(
+    {
+      logger.info(s"For URI ${uri} the NL generation generated an empty string. Try again with more triples...")
+      createTextualRepresenationUsingTriple2Nl(endpoint, m, (s => !inBlacklist(s)))
+    }) .getOrElse({
+      logger.warn(s"For URI ${uri} the extended NL generation generated an empty string. Returning it...")
+      ""
+    })
+    Ok(toJson(Map("nl" -> text)))
+  }
+
+  def createTextualRepresenationUsingTriple2Nl(endpoint: SparqlEndpoint, m: Model, statementFilter : Statement => Boolean): Option[String] = {
     val statements: Stream[Statement] = ExtendedIteratorStream(m.listStatements())
     val triples: util.List[Triple] = (for {
-      s : Statement <- statements if isClass(s) || s.getPredicate.toString.contains("http://dbpedia.org/ontology") && !inBlacklist(s)
+      s: Statement <- statements if isClass(s) || statementFilter(s)
     } yield {
         Triple.create(s.getSubject.asNode(), s.getPredicate.asNode(), s.getObject.asNode())
-    }).toList.asJava
-    val text: String = new TripleConverter(endpoint, "triple2nl_cache", "public/wordnet/linux/dict").convertTriplesToText(triples)
-    Ok(toJson(Map("nl" -> text)))
+      }).toList.asJava
+    new TripleConverter(endpoint, "triple2nl_cache", "public/wordnet/linux/dict").convertTriplesToText(triples) match {
+      case s if s.isEmpty => None
+      case s => Some(s)
+    }
   }
 
   val classProperty: Property = ResourceFactory.createProperty("http://www.w3.org/1999/02/22-rdf-syntax-ns#type")
@@ -42,7 +57,8 @@ object NlFromSubject extends LdbController {
     "http://dbpedia.org/ontology/wikiHITS",
     "http://dbpedia.org/ontology/wikiPageRank",
     "http://dbpedia.org/ontology/wikiPageInLinkCountCleaned",
-    "http://dbpedia.org/ontology/wikiPageOutLinkCountCleaned"
+    "http://dbpedia.org/ontology/wikiPageOutLinkCountCleaned",
+    "http://www.w3.org/2002/07/owl#sameAs"
   ).map(ResourceFactory.createProperty(_))
 
 
