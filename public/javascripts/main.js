@@ -82,6 +82,7 @@ angular.module('linked_data_browser', [
                 ]
             };
         };
+
         if (!model) {
             $scope.editable = false;
             // set default model for demo purposes
@@ -95,7 +96,7 @@ angular.module('linked_data_browser', [
                 localStorageService.set(name, model);
             });
 
-            $scope.$watch("subject_mask", function(newValue, oldValue){
+            $scope.$watch("subject", function(newValue, oldValue){
                 if(newValue !== undefined){
                     $scope.subject = newValue;
                     $scope.model =  $scope.modelFactory();
@@ -103,8 +104,14 @@ angular.module('linked_data_browser', [
                 }
             });
 
+            $scope.$watch("subject_mask", function(newValue, oldValue){
+                if(newValue !== undefined && newValue != oldValue){
+                    $scope.subject = newValue;
+                }
+            });
+
             $scope.$watch("endpoint_mask", function(newValue, oldValue){
-                if(newValue !== undefined){
+                if(newValue !== undefined && newValue != oldValue){
                     $scope.endpoint= newValue;
                 }
             });
