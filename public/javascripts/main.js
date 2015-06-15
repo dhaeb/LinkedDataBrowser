@@ -21,10 +21,10 @@ angular.module('linked_data_browser', [
         $routeProvider.when('/', {
             templateUrl: 'assets/angular-templates/adf.html',
             controller: controlerName
-        }).when("/:endpoint/:subject", {
+        }).when("/:endpoint*\/subject/:subject*", {
             templateUrl: 'assets/angular-templates/adf.html',
             controller: controlerName
-        }).when("/:subject", {
+        }).when("/:subject*", {
             templateUrl: 'assets/angular-templates/adf.html',
             controller: controlerName
         })
