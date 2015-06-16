@@ -1,12 +1,6 @@
 package controllers
 
-import controllers.SearchSuggestionController._
-import play.api.libs.json.Json
-import play.api.mvc.Action
+object LocationsFromSubject extends LdbRdfPropertySelectorController {
 
-object LocationsFromSubject {
-  def index = Action(play.api.mvc.BodyParsers.parse.json) { request =>
-    val transferable: Map[String, String] = Map("message" -> "This service is under construction")
-    Ok(Json.toJson(transferable))
-  }
+  override def selectablePropertyUris: List[String] = List("http://www.w3.org/2003/01/geo/wgs84_pos#lat" , "http://www.w3.org/2003/01/geo/wgs84_pos#long")
 }

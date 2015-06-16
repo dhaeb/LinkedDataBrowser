@@ -1,3 +1,5 @@
+package de.unileipzig.aksw
+
 import org.junit.runner._
 import org.specs2.mutable._
 import org.specs2.runner._
@@ -22,7 +24,7 @@ class MetainfoFromSubjectSpec extends Specification {
       status(home) must equalTo(OK)
       contentType(home) must beSome.which(_ == "application/json")
       private val content = Json.parse(contentAsString(home))
-      private val messageValue: String = (content \ ("abstract")).toString().replace("\"", "")
+      private val messageValue: String = (content \ ("comment")).toString().replace("\"", "")
       messageValue must startWith("Leipzig (/ˈlaɪptsɪɡ/; German pronunciation: [ˈlaɪ̯pt͡sɪç] ) is a city in the federal state of Saxony, Germany.")
     }
 

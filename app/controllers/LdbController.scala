@@ -2,12 +2,15 @@ package controllers
 
 import java.net.URI
 
-import com.hp.hpl.jena.rdf.model.Model
+import com.hp.hpl.jena.rdf.model._
+import controllers.LocationsFromSubject._
 import controllers.SearchSuggestionController._
 import de.aksw.Constants
 import de.aksw.sparql._
 import org.dllearner.kb.sparql.SparqlEndpoint
 import play.api.Logger
+import play.api.libs.json.Json._
+import play.api.libs.json.{JsString, JsNumber, Writes}
 import play.api.mvc.{Result, Action}
 
 import scala.util.Try
@@ -36,6 +39,40 @@ trait LdbController {
   }
 
   def process(uri : String, endpoint : SparqlEndpoint, m : Model) : Result
+
+}
+
+trait LdbRdfPropertySelectorController extends LdbController {
+  def selectablePropertyUris : List[String]
+
+  val selectablepProperties : List[Property] = selectablePropertyUris.map(ResourceFactory.createProperty(_))
+
+  val F = classOf[java.lang.Float]
+
+  implicit val literalWrites : Writes[Literal] = Writes[Literal](js => {
+    Option(js.getDatatype).map(_.getJavaClass) match {
+      case Some(F) => JsNumber(BigDecimal(js.getLexicalForm))
+      case None => JsString(js.getLexicalForm)
+    }
+  })
+
+  override def process(uri: String, endpoint: SparqlEndpoint, m: Model): Result = {
+    val givenResource: Resource = ResourceFactory.createResource(uri)
+    val tuples: List[(String, Literal)] = for {
+      property <- selectablepProperties
+    } yield {
+        val key = property.getLocalName
+        val value = Option(m.getProperty(givenResource, property)).map({ s =>
+          s.getObject.asLiteral()
+        }).getOrElse({
+          logger.warn(s"No ${key} found for uri ${uri}")
+          ResourceFactory.createPlainLiteral("")
+        })
+        (key, value)
+      }
+    val returnable = toJson(Map(tuples: _*))
+    Ok(returnable)
+  }
 
 }
 
