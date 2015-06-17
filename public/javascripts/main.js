@@ -14,7 +14,7 @@ angular.module('linked_data_browser', [
     'adf.widget.version', 'adf.widget.clock',
     'LocalStorageModule', 'ngRoute',
     'ldbSearchDirective','lodb.widget.main'
-]).config(function(dashboardProvider, $routeProvider, localStorageServiceProvider){
+]).config(function(dashboardProvider, $routeProvider, localStorageServiceProvider, DEFAULT_ENDPOINT){
     dashboardProvider.widgetsPath(widgetsPath);
     localStorageServiceProvider.setPrefix('adf');
 
@@ -25,15 +25,15 @@ angular.module('linked_data_browser', [
             templateUrl: 'assets/angular-templates/adf.html',
             controller: controlerName
         }).when("/:subject*", {
-            templateUrl: 'assets/angular-templates/adf.html',
-            controller: controlerName
-        })
-        .otherwise({
+            redirectTo : function (routeParams, path, search) {
+                return "/" + DEFAULT_ENDPOINT + "/subject" + path;
+            }
+        }).otherwise({
             redirectTo: '/'
         });
 }).service('query_parameter', function(DEFAULT_ENDPOINT, DEFAULT_SUBJECT){
     var endpoint = DEFAULT_ENDPOINT;
-    var  subject = DEFAULT_SUBJECT;
+    var subject = DEFAULT_SUBJECT;
 
     this.getEndpoint = function(){return endpoint;};
     this.setEndpoint = function(newendpoint){endpoint = newendpoint;};
@@ -41,7 +41,7 @@ angular.module('linked_data_browser', [
     this.getSubject = function(){return subject;};
     this.setSubject = function(newsubject){subject = newsubject;};
 
-}).controller(controlerName, function($scope, localStorageService, $routeParams, DEFAULT_ENDPOINT, DEFAULT_SUBJECT, query_parameter){
+}).controller(controlerName, function($scope, localStorageService, $routeParams, $location, query_parameter){
     $scope.$routeParams = $routeParams;
     $scope.endpoint = "endpoint" in $routeParams ? $routeParams.endpoint : query_parameter.getEndpoint();
     $scope.subject = "subject" in $routeParams ? $routeParams.subject : query_parameter.getSubject();
@@ -131,7 +131,7 @@ angular.module('linked_data_browser', [
 
         $scope.$watch("query_parameter.getSubject()", function(newValue, oldValue){
             if(newValue !== undefined){
-                $scope.subject = newValue;
+                $location.path("/" + $scope.endpoint + "/subject/" + newValue)
             }
         }, true);
 

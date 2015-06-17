@@ -30,11 +30,11 @@ angular.module('lodb.widget.main.fox', [])
                     if(oldHref === undefined || startsWith(oldHref)){
                         return oldHref;
                     } else {
-                        return "/#/" + encodeURIComponent(oldHref);
+                        return "/#/" + oldHref;
                     }
                 });
                 $("a").attr("target", function(i, target) {
-                    var parent = "_parent";
+                    var parent = "_self";
                     if(target !== undefined || target != parent){
                         return parent;
                     }
