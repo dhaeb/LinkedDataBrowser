@@ -36,7 +36,8 @@ class TestSparqlQueryExecutor(_system: ActorSystem) extends TestKit(_system) wit
          |PREFIX rdfs: <http://www.w3.org/2000/01/rdf-schema#>
          |PREFIX owl: <http://www.w3.org/2002/07/owl#>
          |
-         |CONSTRUCT{ <test> ?p ?o}
+         |CONSTRUCT{ <test> ?p ?o .
+         |           ?o <http://dbpedia.org/ontology/wikiPageRank> ?pagerank}
          |WHERE {
          |    <test> ?p ?o .
          |    FILTER(!isLiteral(?o) || lang(?o) = "" || langMatches(lang(?o), "EN"))
@@ -46,6 +47,9 @@ class TestSparqlQueryExecutor(_system: ActorSystem) extends TestKit(_system) wit
          |        FILTER NOT EXISTS {
          |            ?o owl:equivalentClass ?directType .
          |        }
+         |    }
+         |    OPTIONAL {
+         |      ?o <http://dbpedia.org/ontology/wikiPageRank> ?pagerank
          |    }
          |}""".stripMargin
     assert(fixture === SparqlSubjectQueryRequest.querystring("test"))

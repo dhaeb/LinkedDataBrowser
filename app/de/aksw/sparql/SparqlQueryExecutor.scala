@@ -4,6 +4,7 @@ import akka.actor._
 import akka.util.Timeout
 import com.hp.hpl.jena.query.{QueryExecutionFactory, QueryFactory}
 import com.hp.hpl.jena.rdf.model.Model
+import de.aksw.iterator.ExtendedIteratorStream
 
 import scala.concurrent.ExecutionContext.Implicits.global
 import scala.concurrent.duration._
@@ -21,7 +22,8 @@ object SparqlSubjectQueryRequest {
         |PREFIX rdfs: <http://www.w3.org/2000/01/rdf-schema#>
         |PREFIX owl: <http://www.w3.org/2002/07/owl#>
         |
-        |CONSTRUCT{ <${uri}> ?p ?o}
+        |CONSTRUCT{ <${uri}> ?p ?o .
+        |           ?o <http://dbpedia.org/ontology/wikiPageRank> ?pagerank}
         |WHERE {
         |    <${uri}> ?p ?o .
         |    FILTER(!isLiteral(?o) || lang(?o) = "" || langMatches(lang(?o), "EN"))
@@ -31,6 +33,9 @@ object SparqlSubjectQueryRequest {
         |        FILTER NOT EXISTS {
         |            ?o owl:equivalentClass ?directType .
         |        }
+        |    }
+        |    OPTIONAL {
+        |      ?o <http://dbpedia.org/ontology/wikiPageRank> ?pagerank
         |    }
         |}""".stripMargin
 }

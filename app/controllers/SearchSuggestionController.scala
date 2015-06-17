@@ -6,6 +6,7 @@ import de.aksw.surface.SurfaceFormIndexer
 import org.apache.lucene.document.Document
 import play.api.libs.json.Json._
 import play.api.mvc._
+import de.aksw.Constants._
 
 import scala.util._
 
@@ -21,7 +22,6 @@ object SearchSuggestionController extends Controller {
   val DEFAULT_RESULT_COUNT: String = "10"
 
   val QUERY_LABEL : String = "query"
-  val COUNT_LABEL: String = "count"
 
   lazy val pathToTtl = System.getProperty(LDB_INDEXABLE_PROPKEY)
 

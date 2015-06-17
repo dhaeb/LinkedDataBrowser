@@ -22,9 +22,9 @@ GET        /metainfo_from_subject         controllers.MetainfoFromSubject.index
 
 GET        /locations_from_subject        controllers.LocationsFromSubject.index
 
-POST        /fox_proxy                      controllers.FoxProxy.index
+GET        /rdf_from_subject              controllers.RdfFromSubject.index
 
-POST        /rdf_from_subject              controllers.RdfFromSubject.index
+POST        /fox_proxy                      controllers.FoxProxy.index
 
 # Map static resources from the /public folder to the /assets URL path
 GET         /assets/*file                  controllers.Assets.at(path="/public", file)

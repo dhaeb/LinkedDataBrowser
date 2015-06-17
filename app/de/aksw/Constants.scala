@@ -9,5 +9,5 @@ object Constants {
   val dbpediaHostname: String = "dbpedia.org"
   val DBPEDIA_ENDPOINT: String = s"http://${dbpediaHostname}/sparql"
   val ENDPOINT_DBPEDIA: SparqlEndpoint = SparqlEndpoint.getEndpointDBpedia
-
+  val COUNT_LABEL: String = "count"
 }
