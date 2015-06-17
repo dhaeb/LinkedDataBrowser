@@ -11,7 +11,7 @@ import org.dllearner.kb.sparql.SparqlEndpoint
 import play.api.Logger
 import play.api.libs.json.Json._
 import play.api.libs.json.{JsString, JsNumber, Writes}
-import play.api.mvc.{Result, Action}
+import play.api.mvc.{AnyContent, Request, Result, Action}
 
 import scala.util.Try
 
@@ -22,7 +22,7 @@ trait LdbController {
 
   protected val logger: Logger = Logger(this.getClass())
 
-  def index = Action { request =>
+  def index = Action { implicit request  =>
     val uriTry: Try[String] = Try(request.queryString("uri")).map(se => se.apply(0))
     val endpoint: SparqlEndpoint = request.getQueryString("endpoint").map(e => new SparqlEndpoint(URI.create(e).toURL)).getOrElse(Constants.ENDPOINT_DBPEDIA)
     if (uriTry.isSuccess) {
@@ -38,7 +38,7 @@ trait LdbController {
     }
   }
 
-  def process(uri : String, endpoint : SparqlEndpoint, m : Model) : Result
+  def process(uri : String, endpoint : SparqlEndpoint, m : Model)(implicit request : Request[AnyContent]) : Result
 
 }
 
@@ -56,7 +56,7 @@ trait LdbRdfPropertySelectorController extends LdbController {
     }
   })
 
-  override def process(uri: String, endpoint: SparqlEndpoint, m: Model): Result = {
+  override def process(uri: String, endpoint: SparqlEndpoint, m: Model)(implicit request : Request[AnyContent]): Result = {
     val givenResource: Resource = ResourceFactory.createResource(uri)
     val tuples: List[(String, Literal)] = for {
       property <- selectablepProperties
