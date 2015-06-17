@@ -34,7 +34,7 @@ object NlFromSubject extends LdbController {
     } yield {
         Triple.create(s.getSubject.asNode(), s.getPredicate.asNode(), s.getObject.asNode())
       }).toList.asJava
-    new TripleConverter(endpoint, "triple2nl_cache", "public/wordnet/linux/dict").convertTriplesToText(triples) match {
+    new TripleConverter(endpoint, "triple2nl_cache", "conf/wordnet/linux/dict").convertTriplesToText(triples) match {
       case s if s.isEmpty => None
       case s => Some(s)
     }
