@@ -1,5 +1,8 @@
 angular.module('lodb.widget.main.fox', [])
-    .controller('foxCtrl', function ($scope, $http, responseData) {
+    .controller('foxCtrl', function ($scope, $http, responseData, config, widget) {
+        if(responseData == ""){
+            config.removeWidget(widget);
+        }
         $scope.content = responseData;
         $http.post("fox_proxy", // in the moment, we use a proxy to overcome the same origin policy - maybe our app will be deployed side by side with fox so that we can change that
             {
