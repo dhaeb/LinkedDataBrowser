@@ -18,13 +18,6 @@ class SearchSuggestionSpec extends Specification {
   import controllers.SearchSuggestionController._
 
   "SearchSuggestion" should {
-    val pathToIndexable: String = "test/resources/test-surface-forms.ttl"
-    val indexFolder: String = "target/test-classes/prod-index"
-    de.aksw.deleteRecursively(new File(indexFolder))
-    System.setProperty(LDB_INDEXABLE_PROPKEY, pathToIndexable)
-    System.setProperty(LDB_INDEXDIR_PROPKEY, indexFolder)
-    assert(System.getProperty(LDB_INDEXABLE_PROPKEY) === pathToIndexable)
-    assert(System.getProperty(LDB_INDEXDIR_PROPKEY) === indexFolder)
 
     "request get parameter and return a list of uris" in new WithApplication {
       val home = route(FakeRequest(GET, "/searchsuggestion?query=java")).get
