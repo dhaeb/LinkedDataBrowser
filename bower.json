@@ -26,6 +26,7 @@
     "adf-widget-clock": "0.1.2",
     "adf-widget-linklist": "0.1.0",
     "adf-widget-version": "0.1.1",
+    "OpenLayers" : "https://github.com/openlayers/ol3/releases/download/v3.6.0/v3.6.0-dist.zip",
     "angular-route" : "1.2.28",
     "angular-local-storage" : "0.2.0",
     "angular-markdown-directive" : "0.1.0",

@@ -87,7 +87,15 @@ angular.module('linked_data_browser', [
                                                         "url": '/pictures_from_subject',
                                                         "endpoint": $scope.endpoint,
                                                     },
-                                                }]
+                                                },{
+                                                    "type": "openlayers",
+                                                    "config": {
+                                                        "uri": $scope.subject,
+                                                        "url": '/locations_from_subject',
+                                                        "endpoint": $scope.endpoint,
+                                                    },
+                                                }
+                                                ]
                                                }
                     ]
                 }
