@@ -1,6 +1,6 @@
 'use strict';
 
-angular.module('lodb.widget.main', ['adf.provider',
+angular.module('lodb.widget.main', ['adf.provider', 'adf.youtube',
     'lodb.widget.main.picture', 'lodb.widget.main.fox', 'lodb.widget.main.openlayers'])
     .config(function (dashboardProvider) {
 

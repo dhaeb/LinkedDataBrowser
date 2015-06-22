@@ -48,9 +48,10 @@ angular.module('linked_data_browser', [
     $scope.query_parameter = query_parameter; // important to watch the value changes!
         var name = 'adfldb';
         var model = localStorageService.get(name);
+        var subjectName = $scope.subject.substring($scope.subject.lastIndexOf('/')+1);
         $scope.modelFactory = function modelFactory(){
             return {
-                title: $scope.subject.substring($scope.subject.lastIndexOf('/')+1),
+                title: subjectName,
                 structure: "8-4 (6-6/12)",
                 rows: [{"columns": [
                         {
@@ -87,18 +88,54 @@ angular.module('linked_data_browser', [
                                                         "url": '/pictures_from_subject',
                                                         "endpoint": $scope.endpoint,
                                                     },
-                                                },{
-                                                    "type": "openlayers",
-                                                    "config": {
-                                                        "uri": $scope.subject,
-                                                        "url": '/locations_from_subject',
-                                                        "endpoint": $scope.endpoint,
-                                                    },
-                                                }
+                                                },
                                                 ]
                                                }
                     ]
-                }
+                },
+                    {
+                        "columns" : [
+                            {
+                                "styleClass": "col-md-3",
+                                "widgets": [
+                                    {
+                                        "title" : "Comment",
+                                        "type": "fox",
+                                        "config": {
+                                            "uri": $scope.subject,
+                                            "url": '/metainfo_from_subject',
+                                            "endpoint": $scope.endpoint,
+                                            "transform"  : function(j){return j.comment;}
+                                        },
+                                    }
+                                ]
+                            },
+                            {
+                                "styleClass": "col-md-4",
+                                "widgets": [
+                                    {
+                                        "type": "openlayers",
+                                        "config": {
+                                            "uri": $scope.subject,
+                                            "url": '/locations_from_subject',
+                                            "endpoint": $scope.endpoint,
+                                        },
+                                    }
+                                ]
+                            },
+                            {
+                                "styleClass": "col-md-5",
+                                "widgets": [
+                                    {
+                                        "type": "youtube",
+                                        "config": {
+                                            q : subjectName
+                                        }
+                                    }
+                                ]
+                            }
+                        ]
+                    }
                 ]
             };
         };

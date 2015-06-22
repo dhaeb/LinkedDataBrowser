@@ -9,8 +9,9 @@
         <link href="@routes.Assets.at("components/bootstrap/dist/css/bootstrap.css")" rel="stylesheet">
         <link href="@routes.Assets.at("components/bootstrap/dist/css/bootstrap-theme.css")" rel="stylesheet">
         <link href="@routes.Assets.at("components/angular-dashboard-framework/dist/angular-dashboard-framework.css")" rel="stylesheet">
+
         <link rel="shortcut icon" type="image/png" href="@routes.Assets.at("images/favicon.png")">
-            <!-- yamm3-> mega nav bar-->
+            <!-- yamm3 mega nav bar-->
         <link href="@routes.Assets.at("components/yamm3/yamm/yamm.css")" rel="stylesheet"/>
 
 
@@ -22,13 +23,10 @@
 
         <!-- build:js js/angular.min.js -->
         <script type="text/javascript" src="@routes.Assets.at("components/angular/angular.js")"></script>
-            <!-- endbuild -->
-
             <!-- build:js js/angular-route.min.js -->
         <script type="text/javascript" src="@routes.Assets.at("components/angular-route/angular-route.js")"></script>
             <!-- endbuild -->
 
-            <!-- build:js js/sample.min.js -->
             <!-- Sortable -->
         <script type="text/javascript" src="@routes.Assets.at("components/Sortable/Sortable.js")"></script>
 
@@ -39,7 +37,7 @@
         <script type="text/javascript" src="@routes.Assets.at("components/bootstrap3-typeahead/bootstrap3-typeahead.js")"></script>
 
             <!-- angular dashboard framework -->
-        <script type="text/javascript" src="@routes.Assets.at("components/angular-dashboard-framework/dist/angular-dashboard-framework.js")")></script>
+        <script type="text/javascript" src="@routes.Assets.at("components/angular-dashboard-framework/dist/angular-dashboard-framework.js")" )></script>
 
             <!-- local storage -->
         <script type="text/javascript" src="@routes.Assets.at("components/angular-local-storage/dist/angular-local-storage.js")"></script>
@@ -69,11 +67,18 @@
         <script type="text/javascript" src="@routes.Assets.at("widgets/picture/src/picture_widget.js")"></script>
         <script type="text/javascript" src="@routes.Assets.at("widgets/fox/src/fox_widget.js")"></script>
         <script type="text/javascript" src="@routes.Assets.at("widgets/openlayers/src/openlayers_widget.js")"></script>
-
+        <script type="text/javascript" src="@routes.Assets.at("widgets/youtube/src/youtube_widget.js")"></script>
         <script type="text/javascript">
             angular.module('lodb.widget.main').constant('DEFAULT_ENDPOINT', '@default_sparql_endpoint');
             angular.module('lodb.widget.main').constant('DEFAULT_SUBJECT', "http://dbpedia.org/resource/DBpedia");
         </script>
+
+        <link rel="stylesheet" href="@routes.Assets.at("components/blueimp-bootstrap-image-gallery/css/bootstrap-image-gallery.min.css")">
+
+        <!-- this script must be loaded after the youtube widget, as the youtube widget defines the function initGAPI to handle the async load event of the google js api -->
+        <script id="gapi" type="text/javascript" src="https://apis.google.com/js/client.js?onload=initGAPI"></script>
+
+
     </head>
     <body ng-app="linked_data_browser">
         <div class="container">
