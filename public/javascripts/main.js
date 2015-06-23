@@ -88,15 +88,54 @@ angular.module('linked_data_browser', [
                                                         "url": '/pictures_from_subject',
                                                         "endpoint": $scope.endpoint,
                                                     },
-                                                },{
-                                                    "type": "youtube",
-                                                    "config": {
-                                                        q : subjectName
-                                                    },
-                                                }]
-                        }
+                                                },
+                                                ]
+                                               }
                     ]
-                }
+                },
+                    {
+                        "columns" : [
+                            {
+                                "styleClass": "col-md-3",
+                                "widgets": [
+                                    {
+                                        "title" : "Comment",
+                                        "type": "fox",
+                                        "config": {
+                                            "uri": $scope.subject,
+                                            "url": '/metainfo_from_subject',
+                                            "endpoint": $scope.endpoint,
+                                            "transform"  : function(j){return j.comment;}
+                                        },
+                                    }
+                                ]
+                            },
+                            {
+                                "styleClass": "col-md-4",
+                                "widgets": [
+                                    {
+                                        "type": "openlayers",
+                                        "config": {
+                                            "uri": $scope.subject,
+                                            "url": '/locations_from_subject',
+                                            "endpoint": $scope.endpoint,
+                                        },
+                                    }
+                                ]
+                            },
+                            {
+                                "styleClass": "col-md-5",
+                                "widgets": [
+                                    {
+                                        "type": "youtube",
+                                        "config": {
+                                            q : subjectName
+                                        }
+                                    }
+                                ]
+                            }
+                        ]
+                    }
                 ]
             };
         };

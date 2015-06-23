@@ -13,8 +13,13 @@
         <link rel="shortcut icon" type="image/png" href="@routes.Assets.at("images/favicon.png")">
             <!-- yamm3 mega nav bar-->
         <link href="@routes.Assets.at("components/yamm3/yamm/yamm.css")" rel="stylesheet"/>
+
+
         <script type="text/javascript" src="@routes.Assets.at("components/jquery/dist/jquery.min.js")"></script>
         <script type="text/javascript" src="@routes.Assets.at("components/bootstrap/dist/js/bootstrap.min.js")"></script>
+
+        <script type="text/javascript" src="@routes.Assets.at("components/OpenLayers/ol.js")"></script>
+        <link href="@routes.Assets.at("components/OpenLayers/ol.css")" rel="stylesheet"/>
 
         <!-- build:js js/angular.min.js -->
         <script type="text/javascript" src="@routes.Assets.at("components/angular/angular.js")"></script>
@@ -61,7 +66,7 @@
         <script type="text/javascript" src="@routes.Assets.at("widgets/main/src/main_widget.js")"></script>
         <script type="text/javascript" src="@routes.Assets.at("widgets/picture/src/picture_widget.js")"></script>
         <script type="text/javascript" src="@routes.Assets.at("widgets/fox/src/fox_widget.js")"></script>
-
+        <script type="text/javascript" src="@routes.Assets.at("widgets/openlayers/src/openlayers_widget.js")"></script>
         <script type="text/javascript" src="@routes.Assets.at("widgets/youtube/src/youtube_widget.js")"></script>
         <script type="text/javascript">
             angular.module('lodb.widget.main').constant('DEFAULT_ENDPOINT', '@default_sparql_endpoint');
