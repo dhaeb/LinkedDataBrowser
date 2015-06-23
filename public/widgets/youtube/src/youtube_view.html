@@ -1,0 +1,14 @@
+<!-- Using the Bootstrap Image Gallery for the picture ordering-->
+
+<style>
+    #links {
+        width: 370px;
+        margin-left: auto ;
+        margin-right: auto ;
+    }
+</style>
+<div id="links">
+    <a ng-repeat="item in response.items" target="_blank" href="http://www.youtube.com/watch?v={{item.id.videoId}}" >
+        <img src="{{item.snippet.thumbnails.default.url}}" title="{{item.snippet.title}}" data-gallery/>
+    </a>
+</div>

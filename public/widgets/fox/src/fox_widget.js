@@ -15,6 +15,8 @@ angular.module('lodb.widget.main.fox', [])
                 if (data) {
                     $scope.content = decodeURIComponent(data.input);
                 }
+            }).error(function(){
+                $scope.content = decodeURIComponent(data.input);
             });
     }).filter("sanitize", ['$sce', function($sce) {
         return function(htmlCode){
@@ -29,21 +31,25 @@ angular.module('lodb.widget.main.fox', [])
             };
 
             if(htmlTags !== undefined){
-                $("a").attr("href", function(i, oldHref) {
+                htmlTags = "<div>" + htmlTags + "</div>"
+                var selector = "a";
+                htmlTags = $(htmlTags);
+                htmlTags.find(selector).attr("href", function(i, oldHref) {
                     if(oldHref === undefined || startsWith(oldHref)){
                         return oldHref;
                     } else {
                         return "/#/" + oldHref;
                     }
+                }).attr("target", function(i, target) {
+                        var parent = "_self";
+                        if(target !== undefined || target != parent){
+                            return parent;
+                        }
+                        return target;
                 });
-                $("a").attr("target", function(i, target) {
-                    var parent = "_self";
-                    if(target !== undefined || target != parent){
-                        return parent;
-                    }
-                   return target;
-                });
+                return htmlTags.html();
+            } else {
+                return htmlTags;
             }
-            return htmlTags;
         }
     }]);

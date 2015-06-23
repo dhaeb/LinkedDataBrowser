@@ -41,11 +41,14 @@ angular.module('linked_data_browser', [
     this.getSubject = function(){return subject;};
     this.setSubject = function(newsubject){subject = newsubject;};
 
+    this.getSubjectName = function(){
+        return this.getSubject().substring(this.getSubject().lastIndexOf('/')+1);
+    };
 }).service('json_builder', function(query_parameter){
 
     var initWidgetsJson = {};
-    var left_width = "col-md-6";
-    var right_width = left_width;
+    var left_width = "col-md-7";
+    var right_width = "col-md-5";
     var structure = "8-4 (6-6/12)";
 
     this.getInitStruktur = function(title, widgetsContent){
@@ -83,7 +86,6 @@ angular.module('linked_data_browser', [
             }
             widgetsContent[widgetKey].config.uri=query_parameter.getSubject();
             widgetsContent[widgetKey].config.endpoint = query_parameter.getEndpoint();
-
             widgets.rows[0].columns[column].widgets[counter]= widgetsContent[widgetKey];
         }
         return widgets;
@@ -91,9 +93,7 @@ angular.module('linked_data_browser', [
 
 
 }).service('widget_builder', function(query_parameter,json_builder, $location){
-
     var t_scope = null;
-    var widgetMainTitle = query_parameter.getSubject().substring(query_parameter.getSubject().lastIndexOf('/')+1);
 
     this.create = function(scope,widgetsContent){
         t_scope = scope;
@@ -105,14 +105,8 @@ angular.module('linked_data_browser', [
         t_scope.$watch("query_parameter.getSubject()", function(newValue, oldValue){
             if(newValue !== undefined){
                 $location.path("/" + query_parameter.getEndpoint() + "/subject/" + newValue);
-                widgetMainTitle = query_parameter.getSubject().substring(query_parameter.getSubject().lastIndexOf('/')+1);
+                var widgetMainTitle = query_parameter.getSubjectName();
                 t_scope.model = json_builder.getInitStruktur(widgetMainTitle,widgetsContent);
-            }
-        });
-
-        t_scope.$watch("query_parameter.getEndpoint()", function(newValue, oldValue){
-            if(newValue !== undefined){
-                $location.path("/" + query_parameter.getEndpoint() + "/subject/" + newValue);
             }
         });
 
@@ -138,12 +132,12 @@ angular.module('linked_data_browser', [
     widgetsContent.push(descriptionWidget);
 
     var descriptionWidget2 = {};
-        descriptionWidget2.title = "Description2";
+        descriptionWidget2.title = "Abstract";
         descriptionWidget2.orientation = "l";
         descriptionWidget2.type = "fox";
         descriptionWidget2.config = {};
-        descriptionWidget2.config.url = '/nl_from_subject';
-        descriptionWidget2.config.transform = function(j){return j.nl;};
+        descriptionWidget2.config.url = '/metainfo_from_subject';
+        descriptionWidget2.config.transform = function(j){return j.comment;};
         widgetsContent.push(descriptionWidget2);
 
     var pictureWidget = {};
@@ -155,14 +149,20 @@ angular.module('linked_data_browser', [
     pictureWidget.config.endpoint = query_parameter.getEndpoint();
     widgetsContent.push(pictureWidget);
 
+    var openlayersWidget = {};
+            openlayersWidget.orientation = "l";
+            openlayersWidget.type = "openlayers";
+            openlayersWidget.config = {};
+            openlayersWidget.config.url = 'locations_from_subject';
+            widgetsContent.push(openlayersWidget);
+
     var descriptionWidget3 = {};
-            descriptionWidget3.title = "Description3";
             descriptionWidget3.orientation = "r";
-            descriptionWidget3.type = "fox";
+            descriptionWidget3.type = "youtube";
             descriptionWidget3.config = {};
-            descriptionWidget3.config.url = '/nl_from_subject';
-            descriptionWidget3.config.transform = function(j){return j.nl;};
+            descriptionWidget3.config.q = query_parameter.getSubjectName();
             widgetsContent.push(descriptionWidget3);
+
 
     widget_builder.create($scope,widgetsContent);
 

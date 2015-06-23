@@ -1,7 +1,7 @@
 'use strict';
 
-angular.module('lodb.widget.main', ['adf.provider',
-    'lodb.widget.main.picture', 'lodb.widget.main.fox'])
+angular.module('lodb.widget.main', ['adf.provider', 'adf.youtube',
+    'lodb.widget.main.picture', 'lodb.widget.main.fox', 'lodb.widget.main.openlayers'])
     .config(function (dashboardProvider) {
         var mainWidget = {
             resolve: {
@@ -58,6 +58,11 @@ angular.module('lodb.widget.main', ['adf.provider',
                 description: 'Display a textual description for the subject tagged by fox',
                 templateUrl: 'assets/widgets/fox/src/fox_view.html',
                 controller: 'foxCtrl'
+            }, mainWidget)).widget('openlayers', angular.extend({
+                title: 'Geographic Information',
+                description: 'Display Geographic Content',
+                templateUrl: 'assets/widgets/openlayers/src/openlayers_widget.html',
+                controller: 'openlayersCtrl'
             }, mainWidget)
         );
 
