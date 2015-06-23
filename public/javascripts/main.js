@@ -14,7 +14,7 @@ angular.module('linked_data_browser', [
     'adf.widget.version', 'adf.widget.clock',
     'LocalStorageModule', 'ngRoute',
     'ldbSearchDirective','lodb.widget.main'
-]).config(function(dashboardProvider, $routeProvider, localStorageServiceProvider){
+]).config(function(dashboardProvider, $routeProvider, localStorageServiceProvider, DEFAULT_ENDPOINT){
     dashboardProvider.widgetsPath(widgetsPath);
     localStorageServiceProvider.setPrefix('adf');
 
@@ -25,10 +25,10 @@ angular.module('linked_data_browser', [
             templateUrl: 'assets/angular-templates/adf.html',
             controller: controlerName
         }).when("/:subject*", {
-            templateUrl: 'assets/angular-templates/adf.html',
-            controller: controlerName
-        })
-        .otherwise({
+            redirectTo : function (routeParams, path, search) {
+                return "/" + DEFAULT_ENDPOINT + "/subject" + path;
+            }
+        }).otherwise({
             redirectTo: '/'
         });
 }).service('query_parameter', function(DEFAULT_ENDPOINT, DEFAULT_SUBJECT){
@@ -40,7 +40,6 @@ angular.module('linked_data_browser', [
 
     this.getSubject = function(){return subject;};
     this.setSubject = function(newsubject){subject = newsubject;};
-
 
 }).service('json_builder', function(query_parameter){
 
@@ -91,7 +90,7 @@ angular.module('linked_data_browser', [
     }
 
 
-}).service('widget_builder', function(query_parameter,json_builder){
+}).service('widget_builder', function(query_parameter,json_builder, $location){
 
     var t_scope = null;
     var widgetMainTitle = query_parameter.getSubject().substring(query_parameter.getSubject().lastIndexOf('/')+1);
@@ -105,7 +104,7 @@ angular.module('linked_data_browser', [
 
         t_scope.$watch("query_parameter.getSubject()", function(newValue, oldValue){
             if(newValue !== undefined){
-                query_parameter.setSubject(newValue);
+                $location.path("/" + query_parameter.getEndpoint() + "/subject/" + newValue);
                 widgetMainTitle = query_parameter.getSubject().substring(query_parameter.getSubject().lastIndexOf('/')+1);
                 t_scope.model = json_builder.getInitStruktur(widgetMainTitle,widgetsContent);
             }
@@ -113,18 +112,17 @@ angular.module('linked_data_browser', [
 
         t_scope.$watch("query_parameter.getEndpoint()", function(newValue, oldValue){
             if(newValue !== undefined){
-                query_parameter.setEndpoint(newValue);
-                widgetMainTitle = query_parameter.getSubject().substring(query_parameter.getSubject().lastIndexOf('/')+1);
-                t_scope.model = json_builder.getInitStruktur(widgetMainTitle,widgetsContent);
+                $location.path("/" + query_parameter.getEndpoint() + "/subject/" + newValue);
             }
         });
 
-
     }
 
-}).controller(controlerName, function($scope,widget_builder, localStorageService, $routeParams, DEFAULT_ENDPOINT, DEFAULT_SUBJECT, query_parameter){
+}).controller(controlerName, function($scope,widget_builder, localStorageService, $routeParams, query_parameter){
+
     $scope.$routeParams = $routeParams;
     $scope.query_parameter = query_parameter; // important to watch the value changes!
+
     query_parameter.setSubject("subject" in $routeParams ? $routeParams.subject : query_parameter.getSubject());
     query_parameter.setEndpoint("endpoint" in $routeParams ? $routeParams.endpoint : query_parameter.getEndpoint());
 

@@ -4,6 +4,7 @@ import java.io.File
 
 import de.aksw.surface.SurfaceFormIndexer
 import org.apache.lucene.document.Document
+import play.api.Play
 import play.api.libs.json.Json._
 import play.api.mvc._
 
@@ -23,10 +24,11 @@ object SearchSuggestionController extends Controller {
   val QUERY_LABEL : String = "query"
   val COUNT_LABEL: String = "count"
 
-  lazy val pathToTtl = System.getProperty(LDB_INDEXABLE_PROPKEY)
+  lazy val pathToTtl = Play.current.configuration.getString(LDB_INDEXABLE_PROPKEY).getOrElse("")
+  lazy val indexDir = Play.current.configuration.getString(LDB_INDEXDIR_PROPKEY).getOrElse("index")
 
-  lazy val indexDir = System.getProperty(LDB_INDEXDIR_PROPKEY)
   lazy val indexer : SurfaceFormIndexer = new SurfaceFormIndexer(new File(pathToTtl),new File(indexDir))
+
   def index = Action { request =>
     val labelsTry: Try[Seq[String]] = Try(request.queryString(QUERY_LABEL))
     val countParamAsString : String = request.getQueryString(COUNT_LABEL).getOrElse(DEFAULT_RESULT_COUNT)
