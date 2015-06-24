@@ -34,13 +34,14 @@ angular.module('lodb.widget.main.openlayers', [])
                         }))
                     });
 
-
+                    var osm = new ol.source.MapQuest({layer: 'osm'});
                     var map = new ol.Map({
                         target: 'map',
                         renderer: 'canvas',
                         layers: [
                             new ol.layer.Tile({
-                                source: new ol.source.OSM()
+                                style: 'Road',
+                                source: osm
                             }),
                             new ol.layer.Vector({
                                 source: vectorSource,

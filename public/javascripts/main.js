@@ -14,16 +14,17 @@ angular.module('linked_data_browser', [
     'adf.widget.version', 'adf.widget.clock',
     'LocalStorageModule', 'ngRoute',
     'ldbSearchDirective','lodb.widget.main'
-]).config(function(dashboardProvider, $routeProvider, localStorageServiceProvider, DEFAULT_ENDPOINT){
+]).config(function(dashboardProvider, $routeProvider, localStorageServiceProvider, DEFAULT_ENDPOINT, DEFAULT_SUBJECT){
     dashboardProvider.widgetsPath(widgetsPath);
     localStorageServiceProvider.setPrefix('adf');
 
-        $routeProvider.when('/', {
+        $routeProvider.when("/:endpoint*\/subject/:subject*", {
             templateUrl: 'assets/angular-templates/adf.html',
             controller: controlerName
-        }).when("/:endpoint*\/subject/:subject*", {
-            templateUrl: 'assets/angular-templates/adf.html',
-            controller: controlerName
+        }).when('/', {
+            redirectTo : function (routeParams, path, search) {
+                return "/" + DEFAULT_ENDPOINT + "/subject/" + DEFAULT_SUBJECT;
+            }
         }).when("/:subject*", {
             redirectTo : function (routeParams, path, search) {
                 return "/" + DEFAULT_ENDPOINT + "/subject" + path;
@@ -122,6 +123,15 @@ angular.module('linked_data_browser', [
 
     var widgetsContent = [];
 
+    var descriptionWidget2 = {};
+    descriptionWidget2.title = "Abstract";
+    descriptionWidget2.orientation = "l";
+    descriptionWidget2.type = "fox";
+    descriptionWidget2.config = {};
+    descriptionWidget2.config.url = '/metainfo_from_subject';
+    descriptionWidget2.config.transform = function(j){return j.comment;};
+    widgetsContent.push(descriptionWidget2);
+
     var descriptionWidget = {};
     descriptionWidget.title = "Description";
     descriptionWidget.orientation = "l";
@@ -129,16 +139,8 @@ angular.module('linked_data_browser', [
     descriptionWidget.config = {};
     descriptionWidget.config.url = '/nl_from_subject';
     descriptionWidget.config.transform = function(j){return j.nl;};
-    widgetsContent.push(descriptionWidget);
 
-    var descriptionWidget2 = {};
-        descriptionWidget2.title = "Abstract";
-        descriptionWidget2.orientation = "l";
-        descriptionWidget2.type = "fox";
-        descriptionWidget2.config = {};
-        descriptionWidget2.config.url = '/metainfo_from_subject';
-        descriptionWidget2.config.transform = function(j){return j.comment;};
-        widgetsContent.push(descriptionWidget2);
+    widgetsContent.push(descriptionWidget);
 
     var pictureWidget = {};
     pictureWidget.title = "Picture";

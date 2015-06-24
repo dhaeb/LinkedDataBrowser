@@ -17,8 +17,6 @@ angular.module('lodb.widget.main.picture', [])
                 'v': '1.0',
                 'q': query,
                 'callback': 'JSON_CALLBACK'
-            }, headers: {
-                'Access-Control-Allow-Origin': "http://ajax.googleapis.com",
             }
         })
             .success(function (data) {
