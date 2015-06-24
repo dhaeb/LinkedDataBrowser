@@ -43,7 +43,8 @@ angular.module('linked_data_browser', [
     this.setSubject = function(newsubject){subject = newsubject;};
 
     this.getSubjectName = function(){
-        return this.getSubject().substring(this.getSubject().lastIndexOf('/')+1);
+        var title = this.getSubject().substring(this.getSubject().lastIndexOf('/') + 1);
+        return title.replace(/_|,/g, " ");
     };
 }).service('json_builder', function(query_parameter){
 

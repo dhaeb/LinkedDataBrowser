@@ -16,7 +16,7 @@ angular.module('lodb.widget.main.fox', [])
                     $scope.content = decodeURIComponent(data.input);
                 }
             }).error(function(){
-                $scope.content = decodeURIComponent(data.input);
+                console.log("Fox cannot be loaded!");
             });
     }).filter("sanitize", ['$sce', function($sce) {
         return function(htmlCode){
