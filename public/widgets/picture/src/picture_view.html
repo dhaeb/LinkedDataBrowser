@@ -2,7 +2,7 @@
     <div >
         <carousel interval="myInterval">
             <slide ng-repeat="slide in slides" active="slide.active">
-                <img ng-src="{{slide.image}}" style="margin:auto;">
+                <img ng-src="{{slide.image}}" ng-error="report($event, $src)" style="margin:auto;">
             </slide>
         </carousel>
     </div>

@@ -1,13 +1,56 @@
-angular.module('lodb.widget.main.picture', [])
-    .controller('pictureCtrl', function ($scope, responseData, $http, config,widget) {
+// using https://github.com/aj0strow/angular-image
 
+angular.module('ngImage', [])
+
+    .directive('img', [
+        '$parse',
+        function ($parse) {
+            function endsWith (url, path) {
+                var index = url.length - path.length
+                return url.indexOf(path, index) !== -1
+            }
+
+            return {
+                restrict: 'E',
+                link: function (scope, element, attributes) {
+                    var fn = attributes.ngError && $parse(attributes.ngError)
+                    element.on('error', function (ev) {
+                        var src = this.src
+
+                        // If theres an ng-error callback then call it
+                        if (fn) {
+                            scope.$apply(function () {
+                                fn(scope, { $event: ev, $src: src })
+                            })
+                        }
+
+                        // If theres an ng-error-src then set it
+                        if (attributes.ngErrorSrc && !endsWith(src, attributes.ngErrorSrc)) {
+                            element.attr('src', attributes.ngErrorSrc)
+                        }
+                    })
+                }
+            }
+        }
+    ]);
+
+
+angular.module('lodb.widget.main.picture', ['ngImage'])
+    .controller('pictureCtrl', function ($scope, responseData, $http, config, widget) {
         $scope.myInterval = 10000;
+
         var pictures = responseData ;
-        var slides = $scope.slides = [];
+        $scope.slides = [];
+
+        $scope.report = function (ev, src) {
+            $scope.slides = jQuery.grep($scope.slides, function(value){
+                return value.image != src;
+            });
+        };
 
         var pictureCounter = 0;
         for (var picture in pictures) {
-            slides.push({image: pictures[picture], text: pictures[picture]});
+            $scope.slides.push({image: pictures[picture], text: pictures[picture]});
             pictureCounter = pictureCounter+1;
         }
         var googleApiUrl = 'http://ajax.googleapis.com/ajax/services/search/images';
@@ -23,7 +66,7 @@ angular.module('lodb.widget.main.picture', [])
                 if (data) {
                     var picList= data.responseData.results;
                     for (var pic in picList) {
-                        slides.push({image: picList[pic].url, text: picList[pic].url});
+                        $scope.slides.push({image: picList[pic].url, text: picList[pic].url});
                         pictureCounter = pictureCounter+1;
                     }
                 }
