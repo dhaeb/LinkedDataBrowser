@@ -3,10 +3,29 @@
 angular.module('lodb.widget.main', ['adf.provider', 'adf.youtube',
     'lodb.widget.main.picture', 'lodb.widget.main.fox', 'lodb.widget.main.openlayers'])
     .config(function (dashboardProvider) {
-
         var mainWidget = {
             resolve: {
                 responseData: function (defaultService, config) {
+
+                    config.removeWidget = function(widget){
+                             var removeElementTag='div';
+                             var removeElementAttribute='adf-id';
+                             var myElements = angular.element(removeElementTag);
+                             if (myElements.length != 0) {
+                                for(var myElementKey in myElements){
+                                var myElement = myElements[myElementKey];
+                                if( myElement.attributes != undefined){
+                                    if(removeElementAttribute in myElement.attributes){
+                                        if(myElement.attributes.getNamedItem(removeElementAttribute).nodeValue == widget.wid){
+                                            myElement.remove();
+                                            }
+                                        }
+                                    }
+                                }
+                             }
+                           };
+
+
                     if (config.url && config.uri && config.endpoint) {
                         var json = defaultService.get(config.url, config.uri, config.endpoint); // get defered
                         return json.then(function(data){ // map the defered result
@@ -48,6 +67,7 @@ angular.module('lodb.widget.main', ['adf.provider', 'adf.youtube',
         );
 
     }).service('defaultService', function ($q, $http) {
+
         return {
             get: function (url, uri, endpoint) {
                 var deferred = $q.defer();

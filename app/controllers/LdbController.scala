@@ -52,7 +52,7 @@ trait LdbRdfPropertySelectorController extends LdbController {
   implicit val literalWrites : Writes[Literal] = Writes[Literal](js => {
     Option(js.getDatatype).map(_.getJavaClass) match {
       case Some(F) => JsNumber(BigDecimal(js.getLexicalForm))
-      case None => JsString(js.getLexicalForm)
+      case e  => JsString(js.getLexicalForm)
     }
   })
 

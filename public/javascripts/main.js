@@ -41,149 +41,129 @@ angular.module('linked_data_browser', [
     this.getSubject = function(){return subject;};
     this.setSubject = function(newsubject){subject = newsubject;};
 
-}).controller(controlerName, function($scope, localStorageService, $routeParams, $location, query_parameter){
-    $scope.$routeParams = $routeParams;
-    $scope.endpoint = "endpoint" in $routeParams ? $routeParams.endpoint : query_parameter.getEndpoint();
-    $scope.subject = "subject" in $routeParams ? $routeParams.subject : query_parameter.getSubject();
-    $scope.query_parameter = query_parameter; // important to watch the value changes!
-        var name = 'adfldb';
-        var model = localStorageService.get(name);
-        var subjectName = $scope.subject.substring($scope.subject.lastIndexOf('/')+1);
-        $scope.modelFactory = function modelFactory(){
-            return {
-                title: subjectName,
-                structure: "8-4 (6-6/12)",
-                rows: [{"columns": [
-                        {
+    this.getSubjectName = function(){
+        return this.getSubject().substring(this.getSubject().lastIndexOf('/')+1);
+    };
+}).service('json_builder', function(query_parameter){
 
-                            "styleClass": "col-md-7",
-                            "rows": [
-                                {
-                                    "columns": [
-                                        {
-                                            "styleClass": "col-md-12",
-                                            "widgets": [
-                                                {
-                                                    "title" : "Description",
-                                                    "type": "fox",
-                                                    "config": {
-                                                        "uri": $scope.subject,
-                                                        "url": '/nl_from_subject',
-                                                        "endpoint": $scope.endpoint,
-                                                        "transform"  : function(j){return j.nl;}
-                                                    },
-                                                }
-                                            ]
-                                        }
-                                    ]
-                                }
-                              ]
-                        },
-                        {
-                                                "styleClass": "col-md-5",
-                                                "widgets": [{
-                                                    "type": "picture",
-                                                    "config": {
-                                                        "uri": $scope.subject,
-                                                        "url": '/pictures_from_subject',
-                                                        "endpoint": $scope.endpoint,
-                                                    },
-                                                },
-                                                ]
-                                               }
-                    ]
-                },
-                    {
-                        "columns" : [
-                            {
-                                "styleClass": "col-md-3",
-                                "widgets": [
-                                    {
-                                        "title" : "Comment",
-                                        "type": "fox",
-                                        "config": {
-                                            "uri": $scope.subject,
-                                            "url": '/metainfo_from_subject',
-                                            "endpoint": $scope.endpoint,
-                                            "transform"  : function(j){return j.comment;}
-                                        },
-                                    }
-                                ]
-                            },
-                            {
-                                "styleClass": "col-md-4",
-                                "widgets": [
-                                    {
-                                        "type": "openlayers",
-                                        "config": {
-                                            "uri": $scope.subject,
-                                            "url": '/locations_from_subject',
-                                            "endpoint": $scope.endpoint,
-                                        },
-                                    }
-                                ]
-                            },
-                            {
-                                "styleClass": "col-md-5",
-                                "widgets": [
-                                    {
-                                        "type": "youtube",
-                                        "config": {
-                                            q : subjectName
-                                        }
-                                    }
-                                ]
-                            }
-                        ]
-                    }
-                ]
-            };
-        };
+    var initWidgetsJson = {};
+    var left_width = "col-md-7";
+    var right_width = "col-md-5";
+    var structure = "8-4 (6-6/12)";
 
-        if (!model) {
-            $scope.editable = false;
-            // set default model for demo purposes
-            model = $scope.modelFactory();
-            $scope.name = name;
-            $scope.model = model;
-            $scope.collapsible = true;
-            $scope.maximizable = false;
+    this.getInitStruktur = function(title, widgetsContent){
+        var widgets = {};
+        widgets.title = title;
+        widgets.structure = structure;
+        widgets.rows = [];
+        widgets.rows[0] = {};
+        widgets.rows[0].columns = [];
+        widgets.rows[0].columns[0] = {};
+        widgets.rows[0].columns[0].styleClass=left_width;
+        widgets.rows[0].columns[0].widgets=[];
+        widgets.rows[0].columns[1] = {};
+        widgets.rows[0].columns[1].styleClass=right_width;
+        widgets.rows[0].columns[1].widgets=[];
 
-            $scope.$on('adfDashboardChanged', function (event, name, model) {
-                localStorageService.set(name, model);
-            });
 
-            $scope.$watch("subject", function(newValue, oldValue){
-                if(newValue !== undefined){
-                    if($scope.query_parameter.getSubject() != newValue){
-                        $scope.query_parameter.setSubject(newValue);
-                    }
-                    $scope.subject = newValue;
-                    $scope.model =  $scope.modelFactory();
-                    $scope.$broadcast(adfDashboardChangedEventName);
-                }
-            });
-
-            $scope.$watch("endpoint", function(newValue, oldValue){
-                if(newValue !== undefined){
-                    if($scope.query_parameter.getEndpoint() != newValue){
-                        $scope.query_parameter.setEndpoint(newValue);
-                    }
-                }
-            });
-
-        }
-
-        $scope.$watch("query_parameter.getSubject()", function(newValue, oldValue){
-            if(newValue !== undefined){
-                $location.path("/" + $scope.endpoint + "/subject/" + newValue)
+        var counterLeft = 0;
+        var counterRight = 0;
+        var counter = 0;
+        var column = 0;
+        for(var widgetKey in widgetsContent){
+            if(widgetsContent[widgetKey].orientation == "l"){
+                counter = counterLeft;
+                counterLeft = counterLeft+1;
+                column = 0;
+            }else {
+                 counter = counterRight;
+                 counterRight = counterRight+1;
+                 column = 1;
             }
-        }, true);
+
+            if(widgetsContent[widgetKey].config == undefined){
+                widgetsContent[widgetKey].config = {};
+            }
+            widgetsContent[widgetKey].config.uri=query_parameter.getSubject();
+            widgetsContent[widgetKey].config.endpoint = query_parameter.getEndpoint();
+            widgets.rows[0].columns[column].widgets[counter]= widgetsContent[widgetKey];
+        }
+        return widgets;
+    }
 
 
-        $scope.$watch("query_parameter.getEndpoint()", function(newValue, oldValue){
+}).service('widget_builder', function(query_parameter,json_builder, $location){
+    var t_scope = null;
+
+    this.create = function(scope,widgetsContent){
+        t_scope = scope;
+        t_scope.editable = false;
+        t_scope.name = name;
+        t_scope.collapsible = true;
+        t_scope.maximizable = false;
+
+        t_scope.$watch("query_parameter.getSubject()", function(newValue, oldValue){
             if(newValue !== undefined){
-                $scope.endpoint = newValue;
+                $location.path("/" + query_parameter.getEndpoint() + "/subject/" + newValue);
+                var widgetMainTitle = query_parameter.getSubjectName();
+                t_scope.model = json_builder.getInitStruktur(widgetMainTitle,widgetsContent);
             }
         });
+
+    }
+
+}).controller(controlerName, function($scope,widget_builder, localStorageService, $routeParams, query_parameter){
+
+    $scope.$routeParams = $routeParams;
+    $scope.query_parameter = query_parameter; // important to watch the value changes!
+
+    query_parameter.setSubject("subject" in $routeParams ? $routeParams.subject : query_parameter.getSubject());
+    query_parameter.setEndpoint("endpoint" in $routeParams ? $routeParams.endpoint : query_parameter.getEndpoint());
+
+    var widgetsContent = [];
+
+    var descriptionWidget = {};
+    descriptionWidget.title = "Description";
+    descriptionWidget.orientation = "l";
+    descriptionWidget.type = "fox";
+    descriptionWidget.config = {};
+    descriptionWidget.config.url = '/nl_from_subject';
+    descriptionWidget.config.transform = function(j){return j.nl;};
+    widgetsContent.push(descriptionWidget);
+
+    var descriptionWidget2 = {};
+        descriptionWidget2.title = "Abstract";
+        descriptionWidget2.orientation = "l";
+        descriptionWidget2.type = "fox";
+        descriptionWidget2.config = {};
+        descriptionWidget2.config.url = '/metainfo_from_subject';
+        descriptionWidget2.config.transform = function(j){return j.comment;};
+        widgetsContent.push(descriptionWidget2);
+
+    var pictureWidget = {};
+    pictureWidget.title = "Picture";
+    pictureWidget.orientation = "r";
+    pictureWidget.type = "picture";
+    pictureWidget.config = {};
+    pictureWidget.config.url = '/pictures_from_subject';
+    pictureWidget.config.endpoint = query_parameter.getEndpoint();
+    widgetsContent.push(pictureWidget);
+
+    var openlayersWidget = {};
+            openlayersWidget.orientation = "l";
+            openlayersWidget.type = "openlayers";
+            openlayersWidget.config = {};
+            openlayersWidget.config.url = 'locations_from_subject';
+            widgetsContent.push(openlayersWidget);
+
+    var descriptionWidget3 = {};
+            descriptionWidget3.orientation = "r";
+            descriptionWidget3.type = "youtube";
+            descriptionWidget3.config = {};
+            descriptionWidget3.config.q = query_parameter.getSubjectName();
+            widgetsContent.push(descriptionWidget3);
+
+
+    widget_builder.create($scope,widgetsContent);
+
 });
