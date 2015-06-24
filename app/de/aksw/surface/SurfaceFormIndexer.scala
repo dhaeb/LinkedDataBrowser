@@ -4,21 +4,16 @@ import java.io.{File, FileFilter}
 
 import com.gilt.lucene.LuceneFieldHelpers._
 import com.gilt.lucene._
-import com.hp.hpl.jena.rdf.model.{NodeIterator, Property, ResIterator, Resource}
+import com.hp.hpl.jena.rdf.model.{Property, Resource}
 import de.aksw.iterator.ExtendedIteratorStream
 import org.apache.jena.riot.RDFDataMgr
-import org.apache.lucene.analysis.core.KeywordAnalyzer
-import org.apache.lucene.analysis.standard.StandardAnalyzer
-import org.apache.lucene.document.Field.Store
-import org.apache.lucene.document.{FieldType, Field, StringField, Document}
+import org.apache.lucene.document.{Document, Field, FieldType, StringField}
 import org.apache.lucene.index.{FieldInfo, Term}
-import org.apache.lucene.queryparser.classic.{MultiFieldQueryParser, QueryParser}
-import org.apache.lucene.queryparser.complexPhrase.ComplexPhraseQueryParser
 import org.apache.lucene.search.BooleanClause.Occur
 import org.apache.lucene.search._
 
+import scala.collection.immutable.ListMap
 
-import de.aksw.iterator.ExtendedIteratorStream._
 trait SpecifiableLuceneIndexPathProvider extends LuceneIndexPathProvider {
     val path : File
     override def withIndexPath[T](f: (File) => T): T = {
@@ -32,6 +27,8 @@ object SurfaceFormIndexer {
   val LABEL : String = "label"
   val URINAME: String = "uriName"
   val URI: String = "uri"
+
+  val TIMES_MORE_RESULTS: Int = 10
 
   def indexExists(into : File) = {
     val files = into.listFiles(new FileFilter(){
@@ -102,26 +99,38 @@ class SurfaceFormIndexer(indexable : File, into : File) {
     req.seq
   }
 
-  def query(queryString : String, resultSize : Int = 10) = {
+  def query(queryString : String, resultSize : Int = 10) : Iterable[Document] = {
+    val query = createQuery(queryString)
+    val topDocuments: Iterable[Document] = indexManager.searchTopDocuments(query, resultSize * TIMES_MORE_RESULTS) // get more results than needed to be able to drop some due to be not unique --> the approch doeing this using lucene is slow!
+    topDocuments.foldLeft(ListMap[String, Document]()){ (acc : ListMap[String, Document], e : Document) => // filter out duplicate uris
+      val uri: String = e.get(URI)
+      if(acc.contains(uri)){
+        acc
+      } else {
+        acc.updated(uri, e)
+      }
+    }.values.take(resultSize)
+  }
+
+  def createQuery(queryString: String): Query = {
     val query: BooleanQuery = new BooleanQuery() // the final query, we aggregate different query types to get good results
     val phraseQuery: PhraseQuery = new PhraseQuery() // for concated terms, e.g. "java platform"
 
     def createStartsWithQuery(t: String): Unit = {
       val trimedInput: String = t.trim
-      if(!trimedInput.isEmpty && trimedInput != "*"){
+      if (!trimedInput.isEmpty && trimedInput != "*") {
         val parse: Query = new PrefixQuery(new Term(LABEL, trimedInput))
         parse.setBoost(0.9f) // other (exact) matches should be more important
         val clause: BooleanClause = new BooleanClause(parse, Occur.SHOULD)
         query.add(clause)
       }
     }
-    queryString.toLowerCase.split("\\s").foreach({t =>
-        phraseQuery.add(new Term(LABEL, t)) // add term to phrase query (TODO this may be improved using a proper query parser, which creates PhraseQueries ootb)
-        createStartsWithQuery(t)  // startsWith query for current word
+    queryString.toLowerCase.split("\\s").foreach({ t =>
+      phraseQuery.add(new Term(LABEL, t)) // add term to phrase query (TODO this may be improved using a proper query parser, which creates PhraseQueries ootb)
+      createStartsWithQuery(t) // startsWith query for current word
     })
     phraseQuery.setBoost(1.1f) // pharse query is important
     query.add(new BooleanClause(phraseQuery, Occur.SHOULD))
-    indexManager.searchTopDocuments(query,resultSize)
+    query
   }
-  
 }
