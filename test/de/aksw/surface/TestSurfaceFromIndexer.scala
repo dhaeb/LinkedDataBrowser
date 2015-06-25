@@ -51,13 +51,14 @@ class TestSurfaceFromIndexer extends FunSuite {
       assert(uriName === doc.get("uriName"))
     }
 
-    assert(2 == testable.query("beat").size)
-    assert(3 == testable.query("groovy").size)
-    assert(3 == testable.query("GROOVY").size)
-    assert(3 == testable.query("groovy server Pages").size)
+    assert(1 == testable.query("beat").size)
+    val groovyResultCount: Int = 2 // also infected due to uniqueness!
+    assert(groovyResultCount == testable.query("groovy").size)
+    assert(groovyResultCount == testable.query("GROOVY").size)
+    assert(groovyResultCount == testable.query("groovy server Pages").size)
     assertIsOnlyUriName(swat, testable.query("Tactical"))
     assertIsOnlyUriName(swat, testable.query("Operative"))
-    assert(4 == testable.query("java").size)
+    assert(3 == testable.query("java").size)  // there are four label entries containing java, three of them are unique
   })
 
 }

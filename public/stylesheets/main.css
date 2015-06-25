@@ -1,3 +1,9 @@
 body {
     padding-top: 65px;
 }
+
+ul.typeahead {
+    height: auto;
+    max-height: 300px;
+    overflow-x: hidden;
+}
