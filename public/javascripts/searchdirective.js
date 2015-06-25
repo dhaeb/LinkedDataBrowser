@@ -52,10 +52,13 @@ angular.module('ldbSearchDirective', [])
             }
         });
 
+        var items = 20; // how many results should be in our suggestion-scrollbar?
+
         var typeahead = inputSearchField.typeahead({
             highlight: true,
             minLength: 1,
             autoSelect : false,
+            items : items,
             displayText : function(item){
                 if(typeof(item) === 'string'){
                     return item;
@@ -83,7 +86,7 @@ angular.module('ldbSearchDirective', [])
                     $http.get("/searchsuggestion",{
                         params: {
                             'query' : newValue,
-                            'count' : 10
+                            'count' : items
                         }
                     }).success(function(response) {
                         typeahead.data('typeahead').source = response;
