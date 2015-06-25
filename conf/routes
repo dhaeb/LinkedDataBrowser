@@ -6,23 +6,17 @@
 
 GET         /                              controllers.LdbMainController.index
 
-GET         /app                           controllers.Application.index
+GET         /searchsuggestion              controllers.SearchSuggestionController.index
 
-GET         /result                        controllers.Result.index
+GET         /nl_from_subject               controllers.NlFromSubject.index
 
-GET         /angular                       controllers.AngularTest.index
+GET         /pictures_from_subject         controllers.PicturesFromSubject.index
 
-GET        /searchsuggestion              controllers.SearchSuggestionController.index
+GET         /metainfo_from_subject         controllers.MetainfoFromSubject.index
 
-GET        /nl_from_subject               controllers.NlFromSubject.index
+GET         /locations_from_subject        controllers.LocationsFromSubject.index
 
-GET        /pictures_from_subject         controllers.PicturesFromSubject.index
-
-GET        /metainfo_from_subject         controllers.MetainfoFromSubject.index
-
-GET        /locations_from_subject        controllers.LocationsFromSubject.index
-
-POST        /fox_proxy                      controllers.FoxProxy.index
+POST        /fox_proxy                     controllers.FoxProxy.index
 
 POST        /rdf_from_subject              controllers.RdfFromSubject.index
 
