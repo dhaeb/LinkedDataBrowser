@@ -1,15 +1,13 @@
 package controllers
 
 import de.askw.model.generated.Tables
-import de.askw.model.generated.Tables.{SusAnswerRow, AnswersRow}
+import de.askw.model.generated.Tables.SusAnswerRow
 import play.api.Logger
 import play.api.db.slick.Config.driver.simple._
 import play.api.db.slick.DBAction
-import play.api.libs.json.Json.toJson
 import play.api.libs.json._
 import play.api.mvc._
 
-import scala.collection.Set
 import scala.util.Try
 
 object SurveyController extends Controller {

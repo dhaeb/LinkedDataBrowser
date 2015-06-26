@@ -11,7 +11,7 @@
             <div id="survey-body" class="modal-body">
                 @questions.map { question =>
                     <fieldset>
-                        <span class="col-md-7">@question._2</span>
+                        <p class="col-md-7">@question._2</p>
                         @for(index <- (1 to 5) ){
                             <div class="col-xs-1">
                                 <input type="radio" name="@question._1" data-ng-model="question.q@question._1" data-ng-value="@index" />
