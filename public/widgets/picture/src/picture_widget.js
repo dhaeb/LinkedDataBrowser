@@ -46,6 +46,9 @@ angular.module('lodb.widget.main.picture', ['ngImage'])
             $scope.slides = jQuery.grep($scope.slides, function(value){
                 return value.image != src;
             });
+            if($scope.slides.length <= 0){
+                config.removeWidget(widget);
+            }
         };
 
         var pictureCounter = 0;
