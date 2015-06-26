@@ -14,9 +14,13 @@ Object.size = function(obj) {
 
 angular.module('ldbSurvey', [])
     .controller('ldbSurveyController', ['$scope', '$http', function($scope, $http) {
+        $scope.question = {};
+        $scope.question.comment = "";
 
         $scope.sendSurveyResult = function(){
-            var areAllSurveyQuestionsServed = $('#survey-body').children().length == Object.size($scope.question);
+            var childCount = $('#survey-body').children().length;
+            var setFieldCount = Object.size($scope.question);
+            var areAllSurveyQuestionsServed = childCount == setFieldCount;
             if(areAllSurveyQuestionsServed){
                 $http.post('/survey', $scope.question);
                 alert("Thanks for rating! :-)");

@@ -26,7 +26,7 @@ object SurveyController extends Controller {
     implicit val session = request.dbSession
     session.withTransaction {
       val jsObjectTry: Try[JsObject] = Try(request.body.asInstanceOf[JsObject]).map({jsObject =>
-        if(jsObject.keys.exists(k => !k.startsWith("q"))){
+        if(jsObject.keys.exists(k => !(k.startsWith("q") || k.equals("comment")))){
           throw new IllegalArgumentException()
         }
         jsObject
@@ -34,8 +34,12 @@ object SurveyController extends Controller {
       if(jsObjectTry.isSuccess){
         logger.info("Evaluation data received...")
         val jsObject = jsObjectTry.get
-        val id = Tables.SusAnswer.returning(Tables.SusAnswer.map(_.id)) insert SusAnswerRow(-1, Option("dummy"), Option("dummy"))
-        jsObject.keys.foreach(s => {
+        val comment: Option[String] = jsObject.value.get("comment").map({ s =>
+          val string: String = s.toString()
+          string.substring(1, string.length - 1)
+        })
+        val id = Tables.SusAnswer.returning(Tables.SusAnswer.map(_.id)) insert SusAnswerRow(-1, comment, Some(request.remoteAddress))
+        jsObject.keys.filter(k => k.startsWith("q")).foreach(s => {
           val questionId: Int = s.substring(1).toInt // delete leading q string (q1 == question with id 1 in db)
           val value: Byte = jsObject.value.get(s).get.toString.toByte // get vrating alue and convert to byte
           Tables.Answers += Tables.AnswersRow(questionId, id, value)
