@@ -1,5 +1,4 @@
 package de.askw.model.generated
-
 // AUTO-GENERATED Slick data model
 /** Stand-alone Slick data model for immediate use */
 object Tables extends {
@@ -77,25 +76,28 @@ trait Tables {
   /** Entity class storing rows of table SusAnswer
    *  @param id Database column id DBType(INT), AutoInc, PrimaryKey
    *  @param comment Database column comment DBType(VARCHAR), Length(255,true), Default(None)
-   *  @param language Database column language DBType(VARCHAR), Length(255,true), Default(None) */
-  case class SusAnswerRow(id: Int, comment: Option[String] = None, language: Option[String] = None)
+   *  @param ip Database column ip DBType(VARCHAR), Length(255,true), Default(None)
+   *  @param ts Database column ts DBType(TIMESTAMP) */
+  case class SusAnswerRow(id: Int, comment: Option[String] = None, ip: Option[String] = None, ts: java.sql.Timestamp)
   /** GetResult implicit for fetching SusAnswerRow objects using plain SQL queries */
-  implicit def GetResultSusAnswerRow(implicit e0: GR[Int], e1: GR[Option[String]]): GR[SusAnswerRow] = GR{
+  implicit def GetResultSusAnswerRow(implicit e0: GR[Int], e1: GR[Option[String]], e2: GR[java.sql.Timestamp]): GR[SusAnswerRow] = GR{
     prs => import prs._
-    SusAnswerRow.tupled((<<[Int], <<?[String], <<?[String]))
+    SusAnswerRow.tupled((<<[Int], <<?[String], <<?[String], <<[java.sql.Timestamp]))
   }
   /** Table description of table sus_answer. Objects of this class serve as prototypes for rows in queries. */
   class SusAnswer(_tableTag: Tag) extends Table[SusAnswerRow](_tableTag, "sus_answer") {
-    def * = (id, comment, language) <> (SusAnswerRow.tupled, SusAnswerRow.unapply)
+    def * = (id, comment, ip, ts) <> (SusAnswerRow.tupled, SusAnswerRow.unapply)
     /** Maps whole row to an option. Useful for outer joins. */
-    def ? = (id.?, comment, language).shaped.<>({r=>import r._; _1.map(_=> SusAnswerRow.tupled((_1.get, _2, _3)))}, (_:Any) =>  throw new Exception("Inserting into ? projection not supported."))
+    def ? = (id.?, comment, ip, ts.?).shaped.<>({r=>import r._; _1.map(_=> SusAnswerRow.tupled((_1.get, _2, _3, _4.get)))}, (_:Any) =>  throw new Exception("Inserting into ? projection not supported."))
     
     /** Database column id DBType(INT), AutoInc, PrimaryKey */
     val id: Column[Int] = column[Int]("id", O.AutoInc, O.PrimaryKey)
     /** Database column comment DBType(VARCHAR), Length(255,true), Default(None) */
     val comment: Column[Option[String]] = column[Option[String]]("comment", O.Length(255,varying=true), O.Default(None))
-    /** Database column language DBType(VARCHAR), Length(255,true), Default(None) */
-    val language: Column[Option[String]] = column[Option[String]]("language", O.Length(255,varying=true), O.Default(None))
+    /** Database column ip DBType(VARCHAR), Length(255,true), Default(None) */
+    val ip: Column[Option[String]] = column[Option[String]]("ip", O.Length(255,varying=true), O.Default(None))
+    /** Database column ts DBType(TIMESTAMP) */
+    val ts: Column[java.sql.Timestamp] = column[java.sql.Timestamp]("ts")
   }
   /** Collection-like TableQuery object for table SusAnswer */
   lazy val SusAnswer = new TableQuery(tag => new SusAnswer(tag))

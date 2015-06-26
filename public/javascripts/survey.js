@@ -22,8 +22,11 @@ angular.module('ldbSurvey', [])
             var setFieldCount = Object.size($scope.question);
             var areAllSurveyQuestionsServed = childCount == setFieldCount;
             if(areAllSurveyQuestionsServed){
-                $http.post('/survey', $scope.question);
-                alert("Thanks for rating! :-)");
+                $http.post('/survey', $scope.question).success(function(){
+                    alert("Thanks for rating! :-)");
+                    }).error(function(data){
+                        alert("error during survey: " + data);
+                    });
                 $("#surveyModal").modal('hide');
             } else {
                 alert("You need to fill all survey answers!");
