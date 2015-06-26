@@ -36,6 +36,7 @@ angular.module('ldbSearchDirective', [])
 
         $scope.setendpoint = function(){
             query_parameter.setEndpoint($scope.endpoint);
+            alert("Endpoint was set to " + $scope.endpoint)
         };
 
 
