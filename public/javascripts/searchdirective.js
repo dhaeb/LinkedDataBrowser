@@ -12,7 +12,7 @@ function isUri(uri){
     return uri.startsWith("http://") || uri.startsWith("https://");
 }
 
-angular.module('ldbSearchDirective', [])
+angular.module('ldbSearchDirective', ['ldbSurvey'])
     .directive('ldbSearch', function() {
         return {
             restrict : 'AEC',
@@ -22,6 +22,11 @@ angular.module('ldbSearchDirective', [])
             templateUrl: 'assets/angular-templates/ldb_searchtemplate.html'
         };
     }).controller('ldbSearchDirectiveController', ['$scope', '$http', 'query_parameter', function($scope, $http, query_parameter) {
+
+        $scope.showSurvey = function(){
+            $("#surveyModal").modal('show');
+        };
+
         var inputSearchField = $('#search');
         $scope.query_parameter = query_parameter;
 
