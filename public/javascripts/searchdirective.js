@@ -96,7 +96,11 @@ angular.module('ldbSearchDirective', ['ldbSurvey'])
                             'count' : items
                         }
                     }).success(function(response) {
-                        typeahead.data('typeahead').source = response;
+                        if($scope.searchString == response.query){
+                            var data = typeahead.data('typeahead');
+                            data.source = response.searchsuggestions;
+                            data.lookup();
+                        }
                     });
                 }
             }

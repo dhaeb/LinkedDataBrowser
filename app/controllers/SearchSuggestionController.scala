@@ -4,6 +4,7 @@ import java.io.File
 
 import de.aksw.surface.SurfaceFormIndexer
 import org.apache.lucene.document.Document
+import play.api.libs.json.JsValue
 import play.api.{Logger, Play}
 import play.api.libs.json.Json._
 import play.api.mvc._
@@ -25,6 +26,7 @@ object SearchSuggestionController extends Controller {
 
   val QUERY_LABEL : String = "query"
   val COUNT_LABEL: String = "count"
+  val SEARCHSUGGESTIONS_LABEL: String = "searchsuggestions"
 
   lazy val pathToTtl = Play.current.configuration.getString(LDB_INDEXABLE_PROPKEY).getOrElse("")
   lazy val indexDir = Play.current.configuration.getString(LDB_INDEXDIR_PROPKEY).getOrElse("index")
@@ -48,8 +50,12 @@ object SearchSuggestionController extends Controller {
   }
 
   def handleSuccessfulRequest(labels: Seq[String], count: Int) = {
-    val transferable = indexer.query(labels.mkString(" "), count).map(parseInfosFromDocment).toList
-    Ok(toJson(transferable))
+    val queryString: String = labels.mkString(" ")
+    val transferable = indexer.query(queryString, count).map(parseInfosFromDocment).toList
+    Ok(toJson(Map[String, JsValue](
+      (SEARCHSUGGESTIONS_LABEL -> toJson(transferable)),
+      (QUERY_LABEL -> toJson(queryString))
+    )))
   }
 
   def parseInfosFromDocment(d: Document) = {
