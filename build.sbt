@@ -53,4 +53,11 @@ libraryDependencies +=  "org.scalatest" %% "scalatest" % "3.0.0-SNAP4" % "test"
 
 libraryDependencies += "com.typesafe.akka" %% "akka-testkit" % "2.3.11" % "test"
 
+libraryDependencies += "com.typesafe.play" %% "play-slick" % "0.8.1"
+
+libraryDependencies += "com.typesafe.slick" % "slick-codegen_2.11" % "2.1.0"
+
+libraryDependencies += "mysql" % "mysql-connector-java" % "5.1.24"
+
+
 unmanagedResourceDirectories in Test <+=  baseDirectory ( _ /"target/web/public/test" )

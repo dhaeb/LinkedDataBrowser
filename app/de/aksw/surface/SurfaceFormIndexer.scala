@@ -46,8 +46,6 @@ object SurfaceFormIndexer {
 class SurfaceFormIndexer(indexable : File, into : File) {
   import SurfaceFormIndexer._
   
-  require(indexable.exists() && indexable.isFile())
-
   val indexManager = indexIfNeeded(into)
 
   private def indexIfNeeded(into : File) = {
@@ -58,6 +56,7 @@ class SurfaceFormIndexer(indexable : File, into : File) {
     with SimpleFSLuceneDirectoryCreator
     with SpecifiableLuceneIndexPathProvider {val path = into}
     if(! indexExists(into)){
+      require(indexable.exists() && indexable.isFile())
     	  def indexTurtleDocuments() = {
     		  val documents : Iterable[Document] = parseFile()
           indexManager.addDocuments(documents)

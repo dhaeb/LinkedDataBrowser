@@ -7,3 +7,7 @@ ul.typeahead {
     max-height: 300px;
     overflow-x: hidden;
 }
+
+textarea#comment {
+    border-color: black;
+}

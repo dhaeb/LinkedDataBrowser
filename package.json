@@ -1,5 +1,6 @@
 {
   "devDependencies": {
     "bower": "1.4.1"
-  }
+  },
+  "start": "npm install"
 }
