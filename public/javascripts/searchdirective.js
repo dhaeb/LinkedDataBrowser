@@ -33,10 +33,11 @@ angular.module('ldbSearchDirective', ['ldbSurvey'])
         // functions to call when changing parameters in searchbar
 
         $scope.browse = function(){
-            if($scope.searchString == query_parameter.getSubject()){
-                query_parameter.setSubject("asdf");
+            if(isUri($scope.searchString)){
+                query_parameter.setSubject($scope.searchString);
+            } else {
+                alert("The searchstring needs to be a URI!");
             }
-            query_parameter.setSubject($scope.searchString);
         };
 
         $scope.setendpoint = function(){

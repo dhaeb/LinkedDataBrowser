@@ -18,12 +18,13 @@ angular.module('ldbSurvey', [])
         $scope.question.comment = "";
 
         $scope.sendSurveyResult = function(){
-            var childCount = $('#survey-body').children().length;
+            var childCount = $('#survey-body > fieldset').length;
             var setFieldCount = Object.size($scope.question);
             var areAllSurveyQuestionsServed = childCount == setFieldCount;
             if(areAllSurveyQuestionsServed){
-                $http.post('/survey', $scope.question).success(function(){
-                    alert("Thanks for rating! :-)");
+                $http.post('/survey', $scope.question)
+                      .success(function(){
+                        alert("Thanks for rating!");
                     }).error(function(data){
                         alert("error during survey: " + data);
                     });

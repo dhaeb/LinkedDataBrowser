@@ -9,9 +9,17 @@
                 <h5>Please take the time and evaluate our website according to these questions! Thank You!</h5>
             </div>
             <div id="survey-body" class="modal-body">
+
+                <div class="row">
+                    <div class="col-md-6"/>
+                    <div class="col-md-4">
+                        <strong class="col-md-8">Does not apply at all</strong>
+                    </div>
+                    <strong class="col-md-2 ">Applies fully</strong>
+                </div>
+                <br/>
                 @questions.map { question =>
                     <fieldset>
-
                         <p class="col-md-7">@question._2</p>
                         @for(index <- (1 to 5)) {
                             <div class="col-xs-1">
@@ -20,15 +28,14 @@
                             </div>
 
                         }
-
                     </fieldset>
                 }
-            <fieldset>
-                <p class="col-md-7">
-                    If you have any comments, please, feel free to write them down!
-                </p>
-                <textarea id="comment" class="col-xs-5" ng-model="question.comment"></textarea>
-            </fieldset>
+                <fieldset>
+                    <p class="col-md-7">
+                        If you have any comments, please, feel free to write them down!
+                    </p>
+                    <textarea id="comment" class="col-xs-5" ng-model="question.comment"></textarea>
+                </fieldset>
             </div>
             <div class="modal-footer">
                 <button type="button" class="btn btn-default" data-dismiss="modal">Cancel</button>
