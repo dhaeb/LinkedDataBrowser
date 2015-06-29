@@ -1,3 +1,20 @@
+/**
+    this module merged the widget components to a runnable widget. additional load this module for each
+    widget the rest api content.
+    The components from the widgets are in the folder public/widgets/«widgetName»
+    A default Controller exist to the bottom of this module.
+
+    merge widget description:
+        1. import the widget module in load.widget.main module
+        2. add in .config the widget parameter in dashboardProvider like:
+            .widget('default', angular.extend({
+                            title: 'widget default title',
+                            description: 'widget default description',
+                            templateUrl: 'path to template',
+                            controller: 'controller name',
+                        }, mainWidget))
+*/
+
 'use strict';
 
 angular.module('lodb.widget.main', ['adf.provider', 'adf.youtube',
@@ -7,6 +24,7 @@ angular.module('lodb.widget.main', ['adf.provider', 'adf.youtube',
             resolve: {
                 responseData: function (defaultService, config) {
 
+                    //set the function to remove the widget
                     config.removeWidget = function(widget){
                              var removeElementTag='div';
                              var removeElementAttribute='adf-id';
@@ -25,7 +43,7 @@ angular.module('lodb.widget.main', ['adf.provider', 'adf.youtube',
                              }
                            };
 
-
+                    //load the content from trhe rest api
                     if (config.url && config.uri && config.endpoint) {
                         var json = defaultService.get(config.url, config.uri, config.endpoint); // get defered
                         return json.then(function(data){ // map the defered result
@@ -67,6 +85,7 @@ angular.module('lodb.widget.main', ['adf.provider', 'adf.youtube',
         );
 
     }).service('defaultService', function ($q, $http) {
+        //load content from the rest api
 
         return {
             get: function (url, uri, endpoint) {
@@ -92,6 +111,9 @@ angular.module('lodb.widget.main', ['adf.provider', 'adf.youtube',
             }
         };
     })
-    .controller('defaultCtrl', function ($scope, responseData) {
+    .controller('defaultCtrl', function ($scope, responseData,widget,config) {
+        //this is the example controller
+        //to remove a widget, run the function: config.removeWidget(widget);
+        //in config are the config parameters, that you can defined in the main.js
         $scope.responseData = responseData;
     })
