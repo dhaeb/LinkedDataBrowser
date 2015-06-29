@@ -1,4 +1,6 @@
 /**
+ * In this file are the methods to create the widgets.
+ * Its possible to add, remove or change the widgets in the controller part.
  * Created by dhaeb on 12.05.15.
  */
 
@@ -15,6 +17,8 @@ angular.module('linked_data_browser', [
     'LocalStorageModule', 'ngRoute',
     'ldbSearchDirective','lodb.widget.main'
 ]).config(function(dashboardProvider, $routeProvider, localStorageServiceProvider, DEFAULT_ENDPOINT, DEFAULT_SUBJECT){
+    //updated the subject and the endpoint in the url
+
     dashboardProvider.widgetsPath(widgetsPath);
     localStorageServiceProvider.setPrefix('adf');
 
@@ -33,6 +37,8 @@ angular.module('linked_data_browser', [
             redirectTo: '/'
         });
 }).service('query_parameter', function(DEFAULT_ENDPOINT, DEFAULT_SUBJECT){
+    //this service save the endpoint and subject. return the subject name without "_" symbol
+
     var endpoint = DEFAULT_ENDPOINT;
     var subject = DEFAULT_SUBJECT;
 
@@ -44,10 +50,10 @@ angular.module('linked_data_browser', [
 
     this.getSubjectName = function(){
         var title = this.getSubject().substring(this.getSubject().lastIndexOf('/') + 1);
-        return title.replace(/_|,/g, " ");
+        return title.replace(/_|,/g, " ");ich bin
     };
 }).service('json_builder', function(query_parameter){
-
+    // this service is responsible to set the widget in right position.
     var initWidgetsJson = {};
     var left_width = "col-md-7";
     var right_width = "col-md-5";
@@ -95,6 +101,9 @@ angular.module('linked_data_browser', [
 
 
 }).service('widget_builder', function(query_parameter,json_builder, $location){
+    //this service create the widget frame with the global parameters. Additionally, if change the
+    //subject name, then new build all widgets.
+
     var t_scope = null;
 
     this.create = function(scope,widgetsContent){
@@ -115,6 +124,16 @@ angular.module('linked_data_browser', [
     }
 
 }).controller(controlerName, function($scope,widget_builder, localStorageService, $routeParams, query_parameter){
+    //In this controller is defined, which widgets are used, with which parameters and position.
+
+    //description to add a widget to the dashboard:
+    // 1. -> create a variable from type map -> var exampleWidget = {}
+    // 2. -> set in the variable title (widget title), orientation("l" -> left, "r" -> right)
+    //       and in the .config map the variable config.url (is the url from the rest api)
+    // 3. -> optional: set in .config the widget dependent variables
+    // 4. -> save the variable in widgetsContent -> widgetsContent.push(exampleWidget);
+
+
 
     $scope.$routeParams = $routeParams;
     $scope.query_parameter = query_parameter; // important to watch the value changes!
