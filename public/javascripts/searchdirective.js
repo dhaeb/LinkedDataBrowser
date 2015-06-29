@@ -36,7 +36,7 @@ angular.module('ldbSearchDirective', ['ldbSurvey'])
             if(isUri($scope.searchString)){
                 query_parameter.setSubject($scope.searchString);
             } else {
-                alert("The searchstring needs to be a URI!");
+                alert("The searchstring needs to be an URI!");
             }
         };
 
