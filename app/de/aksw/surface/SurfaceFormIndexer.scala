@@ -8,12 +8,16 @@ import com.hp.hpl.jena.rdf.model.{Property, Resource}
 import de.aksw.iterator.ExtendedIteratorStream
 import org.apache.jena.riot.RDFDataMgr
 import org.apache.lucene.document.{Document, Field, FieldType, StringField}
-import org.apache.lucene.index.{FieldInfo, Term}
+import org.apache.lucene.index.FieldInfo.IndexOptions
+import org.apache.lucene.index.Term
 import org.apache.lucene.search.BooleanClause.Occur
 import org.apache.lucene.search._
 
 import scala.collection.immutable.ListMap
 
+/**
+ * Lucene Index Path Provider which enables to adjust the path to the index files.
+ */
 trait SpecifiableLuceneIndexPathProvider extends LuceneIndexPathProvider {
     val path : File
     override def withIndexPath[T](f: (File) => T): T = {
@@ -70,7 +74,7 @@ class SurfaceFormIndexer(indexable : File, into : File) {
 
   private def createFieldType: FieldType = {
     val myStringType = new FieldType(StringField.TYPE_STORED);
-    myStringType.setIndexOptions(FieldInfo.IndexOptions.DOCS_AND_FREQS_AND_POSITIONS_AND_OFFSETS)
+    myStringType.setIndexOptions(IndexOptions.DOCS_AND_FREQS_AND_POSITIONS_AND_OFFSETS)
     myStringType.setOmitNorms(false);
     myStringType.setTokenized(true)
     myStringType

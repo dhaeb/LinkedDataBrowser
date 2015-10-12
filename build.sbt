@@ -24,9 +24,24 @@ resolvers += "dev.davidsoergel.com snapshots" at "http://dev.davidsoergel.com/ne
 // dependencies
 
 // compile scope
-libraryDependencies +=   "com.gilt" %% "lib-lucene-sugar" % "0.2.3"
 
-libraryDependencies += "org.apache.jena" % "apache-jena-libs" % "2.13.0"
+val luceneVersion = "4.10.3"
+
+libraryDependencies += "org.apache.lucene" % "lucene-core" % luceneVersion
+
+libraryDependencies += "org.apache.lucene" % "lucene-analyzers-common" % luceneVersion
+
+libraryDependencies += "org.apache.lucene" % "lucene-queryparser" % luceneVersion
+
+libraryDependencies ++=   Seq("com.gilt" %% "lib-lucene-sugar" % "0.2.3" // lucene commes with apache jena in version 5.X.X
+                              exclude ("org.apache.lucene", "lucene-core")
+                              exclude ("org.apache.lucene", "lucene-analyzers-common")
+                              exclude("org.apache.lucene", "lucene-queryparser"))
+
+libraryDependencies ++= Seq("org.apache.jena" % "apache-jena-libs" % "2.13.0"
+                            exclude ("org.apache.lucene", "lucene-core")
+                            exclude ("org.apache.lucene", "lucene-analyzers-common")
+                            exclude("org.apache.lucene", "lucene-queryparser"))
 
 libraryDependencies ++= Seq(
 "org.aksw.semweb2nl" % "triple2nl" % "0.0.1-SNAPSHOT"
@@ -35,6 +50,9 @@ libraryDependencies ++= Seq(
     exclude("com.martiansoftware", "JSAP")
     exclude("org.aksw", "semlibsvm")
     exclude("org.apache.jena","jena-arq")
+    exclude ("org.apache.lucene", "lucene-core")
+    exclude ("org.apache.lucene", "lucene-analyzers-common")
+    exclude("org.apache.lucene", "lucene-queryparser")
 )
 
 libraryDependencies ++= Seq(
