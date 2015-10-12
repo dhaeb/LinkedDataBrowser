@@ -25,7 +25,7 @@ class MetainfoFromSubjectSpec extends Specification {
       contentType(home) must beSome.which(_ == "application/json")
       private val content = Json.parse(contentAsString(home))
       private val messageValue: String = (content \ ("comment")).toString().replace("\"", "")
-      messageValue must startWith("Leipzig (/ˈlaɪptsɪɡ/; German pronunciation: [ˈlaɪ̯pt͡sɪç] ) is a city in the federal state of Saxony, Germany.")
+      messageValue must startWith("Leipzig (/ˈlaɪptsɪɡ/; German pronunciation: [ˈlaɪ̯pt͡sɪç]")
     }
 
     "request without uri shoulud be a bad request" in new WithApplication {

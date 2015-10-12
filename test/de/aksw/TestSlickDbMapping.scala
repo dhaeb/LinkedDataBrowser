@@ -14,7 +14,7 @@ class TestSlickDbMapping extends FunSuite {
     assume(isReachable("kdi-student.de"))
     Database.forURL("jdbc:mysql://kdi-student.de:3306/ldb", driver="com.mysql.jdbc.Driver", user="ldb", password="sus").withSession { implicit session =>
       val column = Tables.Questions.length.run
-      assert(column == 10)
+      assert(column == 13)
       ()
     }
   }
