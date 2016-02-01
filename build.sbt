@@ -53,6 +53,7 @@ libraryDependencies ++= Seq(
     exclude ("org.apache.lucene", "lucene-core")
     exclude ("org.apache.lucene", "lucene-analyzers-common")
     exclude("org.apache.lucene", "lucene-queryparser")
+    exclude("simplenlg", "simplenlg")
 )
 
 libraryDependencies ++= Seq(
@@ -76,6 +77,8 @@ libraryDependencies += "com.typesafe.play" %% "play-slick" % "0.8.1"
 libraryDependencies += "com.typesafe.slick" % "slick-codegen_2.11" % "2.1.0"
 
 libraryDependencies += "mysql" % "mysql-connector-java" % "5.1.24"
+
+libraryDependencies += "simplenlg" % "simplenlg" % "4.4.3"
 
 
 unmanagedResourceDirectories in Test <+=  baseDirectory ( _ /"target/web/public/test" )
